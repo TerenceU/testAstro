@@ -1,0 +1,51 @@
+---
+export const prerender = false;
+const { ...props } = Astro.props;
+
+props.class = props.class ?? `
+w-full
+h-10 
+px-4 
+border 
+border-gray-300 
+rounded-md 
+focus:outline-none 
+focus:ring-2 
+focus:ring-blue-500
+`;
+
+props.value = await Astro.slots.render('default') ?? props.value ?? '';
+
+props.type = props.type ?? 'text';
+
+switch (props.type) {
+    case 'email':
+        props.class += ' placeholder-gray-500';
+        props.placeholder = props.placeholder ?? 'Enter email here...';
+        break;
+    case 'password':
+        props.class += ' placeholder-gray-500';
+        props.placeholder = props.placeholder ?? 'Enter password here...';
+        break;
+    case 'number': 
+        props.class += ' placeholder-gray-500';
+        props.placeholder = props.placeholder ?? 'Enter number here...';
+        break;
+    case 'text':
+        props.class += ' placeholder-gray-500';
+        props.placeholder = props.placeholder ?? 'Enter text here...';
+        break;
+    default:
+        props.class += ' placeholder-gray-500';
+        break;
+}
+
+---
+
+<input 
+    type={props.type}
+    class={props.class}
+    placeholder={props.placeholder}
+    value={props.value}
+    {...props}>
+</input>

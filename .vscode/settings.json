@@ -1,0 +1,65 @@
+{
+    "piny.project_settings": {
+        "open-pages": [
+            "pinyfakepage.html"
+        ],
+        "urls": {
+            "pinyfakepage.html": {
+                "open-page-views": [
+                    {
+                        "w": 1920,
+                        "h": 1000
+                    }
+                ]
+            }
+        },
+        "recent-classes": [
+            "u",
+            "m",
+            "+",
+            "y",
+            "7",
+            "4",
+            "1",
+            "6",
+            "9",
+            "]",
+            ")",
+            "2",
+            ".",
+            ",",
+            "(",
+            "g",
+            "x",
+            "p",
+            "5",
+            "_",
+            "[",
+            "0",
+            "3",
+            "w",
+            "a",
+            ":",
+            "v",
+            "r",
+            "s",
+            "-",
+            "t",
+            "f",
+            "k",
+            "c",
+            "o",
+            "l",
+            "b",
+            "n",
+            "e",
+            "d",
+            "i",
+            "h"
+        ],
+        "tw-external-config": {},
+        "source-folders": null,
+        "preview-url": "http://localhost:4321",
+        "ai-project-brief": null
+    }
+}

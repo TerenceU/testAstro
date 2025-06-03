@@ -1,0 +1,55 @@
+---
+//Import global scss
+import BaseText from '@/components/text/BaseText.astro';
+import BaseNav from '../components/nav/BaseNav.astro';
+import '../styles/starwind.css';
+import LayoutNavs from './Navs/LayoutNavs.json';
+import { TranslationService } from '../i18n/utils';
+import TranslateDropdown from '@/components/dropdown/TranslateDropdown.astro';
+
+const { lang } = Astro.params;
+const t = TranslationService.useTranslations(lang);
+
+//get the current url path and create the page title and description
+let currentPath = Astro.url.pathname.split('/').findLast(part => part) || 'index';
+
+//check if the current path is in the LayoutNavs.json file, if not, use 'index'
+if (!LayoutNavs.some(nav => nav.label === currentPath)) {
+  currentPath = 'index';
+}
+
+let pageTitle = t(`pages.${currentPath}.title`) || t('pages.index.title');
+let pageDescription = t(`pages.${currentPath}.description`) || t('pages.index.description');
+
+
+
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <slot name="head"></slot>
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.3"></script>
+
+    <!-- Alpine.js -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  </head>
+  <body>
+
+    
+    <slot name="nav">
+      <div class="flex items-center justify-between bg-gray-800 text-gray-100">
+        <BaseNav jsonNav={LayoutNavs}></BaseNav>
+        <TranslateDropdown lang={lang} class="w-1/12" />
+      </div>
+    </slot>
+    
+    <slot />
+    
+  </body>
+</html>

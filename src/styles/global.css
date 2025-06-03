@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+    --color-primary: #deb887; /* marrone chiaro */
+    --color-secondary: #8fbc8f; /* verde pastello */
+    --color-accent: #f0e68c; /* giallo chiaro */
+    --color-background: #f5f5dc; /* beige chiaro */
+    --color-text: #333333; /* grigio scuro per il testo */
+    --color-border: #d2b48c; /* marrone chiaro per i bordi */ 
+    --color-error: #ff6347; /* rosso pomodoro per gli errori */
+    --color-success: #98fb98; /* verde chiaro per i successi */
+
+    /* Font */
+    --font-family: 'Arial', sans-serif; /* Font principale */
+    --font-size-base: 16px; /* Dimensione base del font */
+    --font-size-large: 20px; /* Dimensione del font per titoli e testi importanti */
+    --font-weight-normal: 400; /* Peso normale del font */
+    --font-weight-bold: 700; /* Peso grassetto del font */
+    --line-height: 1.5; /* Altezza della linea per una buona leggibilità */
+    --border-radius: 8px; /* Raggio di curvatura per gli angoli */
+ 
+    /* menu */
+    
+    --inset-shadow-menu: inset 0px 5px 0px var(--color-border); 
+}

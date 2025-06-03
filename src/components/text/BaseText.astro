@@ -1,0 +1,41 @@
+---
+import { TranslationService } from "../../i18n/utils";
+const { lang } = Astro.params;
+let { Type, ...props } = Astro.props as Record<string, any>;
+export const prerender = false;
+if (!props.class) {
+  props.class = 'text-3xl font-bold text-gray-900 dark:text-white';
+}
+
+var validTypes = ['h1', 'h2', 'h3', 'h4', 'h5'];
+if (!validTypes.includes(Type)) {
+  Type = 'h1';
+}
+
+const t = TranslationService.useTranslations(lang);
+
+
+//per ogni elemento all'interno dello slot, se è un testo, lo traduce
+const slotChilds = await Astro.slots.render('default');
+const translatedChilds = slotChilds
+  .split('\n')
+  .map(line => line.trim())
+  .filter(line => line.length > 0)
+  .map(line => {
+    // Check if the line is a text node
+    if (line.startsWith('<') && line.endsWith('>')) {
+      return line; // It's an HTML element, return as is
+    } else {
+      return t(line); // Translate the text
+    }
+  })
+  .join('\n');
+
+
+
+---
+
+<!-- switch between the type -->
+<Type class={props.class} {...props}>
+  {translatedChilds}
+</Type>

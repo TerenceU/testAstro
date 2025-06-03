@@ -1,0 +1,28 @@
+---
+import BaseDropdown from "./BaseDropdown.astro";
+import { TranslationService } from "@/i18n/utils";
+
+const { lang, ...props } = Astro.props;
+const currentPath = Astro.url.pathname;
+const languages = TranslationService.languagesArray;
+---
+
+<BaseDropdown id="lang-dropdown" value={currentPath} {...props}>
+  {languages.map(langObj => (
+    <option value={`/${langObj.params.lang}`}>{langObj.label}</option>
+  ))}
+</BaseDropdown>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdown = document.getElementById('lang-dropdown');
+    if (dropdown) {
+      dropdown.addEventListener('change', function(e) {
+        const val = e.target.value;
+        if (val.startsWith('/')) {
+          window.location.pathname = val;
+        }
+      });
+    }
+  });
+</script>

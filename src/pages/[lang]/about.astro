@@ -1,0 +1,28 @@
+---
+import BaseText from '@/components/text/BaseText.astro';
+import { TranslationService } from '../../i18n/utils';
+import Layout from '../../layout/layout.astro';
+export function getStaticPaths() {
+  return TranslationService.languagesArray
+}
+
+const { lang } = Astro.params;
+const t = TranslationService.useTranslations(lang);
+---
+
+    <Layout>
+
+        <Fragment slot='head'>
+            <title>{t('pages.about.title')}</title>
+            <meta name="description" content={t('pages.about.description')} />
+        </Fragment>
+
+        <BaseText Type="h1">
+            {t('pages.about.title')}
+        </BaseText>
+        
+        <BaseText Type="p">
+            {t('pages.about.description')}
+        </BaseText>
+
+    </Layout>

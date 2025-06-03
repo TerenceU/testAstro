@@ -9,6 +9,24 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.7.13"
+    "@astrojs/alpinejs": "^0.4.8",
+    "@astrojs/node": "^9.2.2",
+    "@astrojs/react": "^4.3.0",
+    "@tabler/icons": "^3.33.0",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/vite": "^4.1.8",
+    "@types/alpinejs": "^3.13.11",
+    "@types/react": "^19.1.5",
+    "@types/react-dom": "^19.1.5",
+    "alpinejs": "^3.14.9",
+    "astro": "^5.7.13",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwind-variants": "^1.0.0",
+    "tailwindcss": "^4.1.8",
+    "tw-animate-css": "^1.3.2"
+  },
+  "devDependencies": {
+    "sass-embedded": "^1.89.0"
   }
 }

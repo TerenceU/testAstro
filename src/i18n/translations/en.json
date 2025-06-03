@@ -1,0 +1,20 @@
+{
+    "hello": "Hello",
+    "pages": {
+        "index": {
+            "title": "Welcome to spesami!",
+            "description": "This is a demo of a React app with i18n and TypeScript."
+        },
+        "about": {
+            "title": "About Us",
+            "description": "Learn more about our mission and values."
+        }
+    },
+    "nav": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact",
+        "blog": "Blog",
+        "services": "Services"
+    }
+}
