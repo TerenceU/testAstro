@@ -1,0 +1,20 @@
+{
+  "hello": "Здравствуйте",
+  "pages": {
+    "index": {
+      "title": "Добро пожаловать в spesami!",
+      "description": "Это демонстрация приложения React с i18n и TypeScript."
+    },
+    "about": {
+      "title": "О нас",
+      "description": "Узнайте больше о нашей миссии и ценностях."
+    }
+  },
+  "nav": {
+    "home": "Главная",
+    "about": "О нас",
+    "contact": "Контакт",
+    "blog": "Блог",
+    "services": "Услуги"
+  }
+}

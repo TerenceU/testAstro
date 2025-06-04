@@ -1,10 +1,19 @@
 import en from './translations/en.json';
 import fr from './translations/fr.json';
 import it from './translations/it.json';
+import de from './translations/de.json';
+import es from './translations/es.json';
+import pt from './translations/pt.json';
+import ru from './translations/ru.json';
 
 const languages = {
   en: 'English',
   fr: 'Français',
+  it: 'Italiano',
+  de: 'Deutsch',
+  es: 'Español',
+  pt: 'Português',
+  ru: 'Русский',
 };
 
 const defaultLang = 'en';
@@ -19,6 +28,11 @@ const ui = {
     'nav.home': 'Accueil',
     'nav.about': 'À propos',
   },
+  it,
+  de,
+  es,
+  pt,
+  ru,
 } as const;
 
 class uiTranslationService {
@@ -31,6 +45,10 @@ class uiTranslationService {
         en: 'English',
         fr: 'Français',
         it: 'Italiano',
+        de: 'Deutsch',
+        es: 'Español',
+        pt: 'Português',
+        ru: 'Русский',
     };
 
     //add defaultLang to the class
@@ -39,7 +57,11 @@ class uiTranslationService {
     public ui = {
         en,
         it,
-        fr
+        fr,
+        de,
+        es,
+        pt,
+        ru
     } as const;
 
 }

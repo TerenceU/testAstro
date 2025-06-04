@@ -2,7 +2,7 @@
   "hello": "Bonjour",
   "pages": {
     "index": {
-      "title": "Bienvenue dans spesami!",
+      "title": "Bienvenue sur spesami!",
       "description": "Ceci est une démo d'une application React avec i18n et TypeScript."
     },
     "about": {

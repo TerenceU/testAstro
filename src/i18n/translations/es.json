@@ -1,0 +1,20 @@
+{
+    "hello": "Hola",
+    "pages": {
+        "index": {
+            "title": "¡Bienvenido a spesami!",
+            "description": "Esta es una demostración de una aplicación React con i18n y TypeScript."
+        },
+        "about": {
+            "title": "Sobre nosotros",
+            "description": "Descubre más sobre nuestra misión y valores."
+        }
+    },
+    "nav": {
+        "home": "Inicio",
+        "about": "Sobre nosotros",
+        "contact": "Contacto",
+        "blog": "Blog",
+        "services": "Servicios"
+    }
+}

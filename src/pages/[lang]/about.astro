@@ -2,8 +2,10 @@
 import BaseText from '@/components/text/BaseText.astro';
 import { TranslationService } from '../../i18n/utils';
 import Layout from '../../layout/layout.astro';
+
+// Genera anche la pagina about statica per ogni lingua
 export function getStaticPaths() {
-  return TranslationService.languagesArray
+  return TranslationService.languagesArray.map(lang => ({ params: { lang: lang.params.lang } }));
 }
 
 const { lang } = Astro.params;

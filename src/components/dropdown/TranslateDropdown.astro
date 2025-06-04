@@ -9,7 +9,7 @@ const languages = TranslationService.languagesArray;
 
 <BaseDropdown id="lang-dropdown" value={currentPath} {...props}>
   {languages.map(langObj => (
-    <option value={`/${langObj.params.lang}`}>{langObj.label}</option>
+    <option value={`/${langObj.params.lang}/`}><img src={`/src/img/${langObj.params.lang}.png`} alt={langObj.label}>{langObj.label}</img></option>
   ))}
 </BaseDropdown>
 
