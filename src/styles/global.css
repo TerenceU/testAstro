@@ -3,8 +3,8 @@
 @theme {
     --color-primary: #deb887; /* marrone chiaro */
     --color-secondary: #8fbc8f; /* verde pastello */
-    --color-accent: #f0e68c; /* giallo chiaro */
     --color-background: #f5f5dc; /* beige chiaro */
+    --color-accent: #f0e68c; /* giallo chiaro */
     --color-text: #333333; /* grigio scuro per il testo */
     --color-border: #d2b48c; /* marrone chiaro per i bordi */ 
     --color-error: #ff6347; /* rosso pomodoro per gli errori */
