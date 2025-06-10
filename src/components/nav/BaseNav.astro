@@ -1,4 +1,4 @@
----
+d---
 import { TranslationService } from '../../i18n/utils';
 import { NavDto } from './nav';
 import { BaseStylesTailwind } from '@/base-style/base-styles';
@@ -33,40 +33,229 @@ const navItems = nav.map(item => {
 const lang = Astro.params.lang;
 const t = TranslationService.useTranslations(lang);
 
+// Ottieni l'URL corrente per determinare la voce attiva
+const currentPath = Astro.url.pathname;
+const currentPathWithoutLang = currentPath.replace(`/${lang}`, '') || '/';
+
+// Funzione per determinare se una voce è attiva
+function isActiveItem(href: string): boolean {
+  // Normalizza l'href rimuovendo ./ e gestendo i casi speciali
+  const normalizedHref = href.replace('./', '/');
+  
+  if (normalizedHref === '/' && currentPathWithoutLang === '/') {
+    return true;
+  }
+  
+  if (normalizedHref !== '/' && currentPathWithoutLang.startsWith(normalizedHref)) {
+    return true;
+  }
+  
+  return false;
+}
+
 const baseLiClass = '';
 
 ---
+<div class="flex items-center justify-between pl-4 pr-4">
+  <slot name="left"/>
+  <nav class="space-x-0 relative">      <!-- Barra animata che segue il mouse -->
+      <div id="nav-indicator" class="absolute bottom-0 h-1 bg-focus rounded-full transition-all duration-300 ease-out opacity-0 pointer-events-none w-24 origin-left"></div>
+        <ul class="flex relative" id="nav-menu">
+          {navItems.map((item, index) => {
+            const isActive = isActiveItem(item.href);
+            return (
+              <li 
+                data-nav-item={index}
+                data-active={isActive}
+                onclick={`window.location.href='${item.href}'`}  
+                class={`relative group space-y-0 p-4 cursor-pointer transition-all duration-200 font-default ${
+                  isActive 
+                    ? 'text-focus font-bold' 
+                    : 'text-text hover:text-focus'
+                }`}
+              >
+                  {t(item.label)}
+                  {item.children && item.children.length > 0 && (
+                      <ul class="absolute hidden group-hover:block bg-dropdown-background border border-dropdown-border rounded-xl shadow-lg mt-2 min-w-max z-50">
+                          {item.children.map(child => {
+                            const isChildActive = isActiveItem(child.href);
+                            return (
+                              <li 
+                                class={`relative group transition-colors duration-200 ${
+                                  isChildActive ? 'bg-focus text-white' : 'hover:bg-fourth'
+                                }`}
+                                onclick={`event.stopPropagation(); window.location.href='${child.href}'`}
+                              >
+                                  <div class={`p-3 cursor-pointer ${
+                                    isChildActive 
+                                      ? 'text-white font-bold' 
+                                      : 'text-dropdown-text hover:text-focus'
+                                  }`}>
+                                    {t(child.label)}
+                                  </div>
+                                  {child.children && child.children.length > 0 && (
+                                      <ul class="absolute left-full top-0 hidden group-hover:block bg-dropdown-background border border-dropdown-border rounded-xl shadow-lg min-w-max z-50">
+                                          {child.children.map(grandChild => {
+                                            const isGrandChildActive = isActiveItem(grandChild.href);
+                                            return (
+                                              <li 
+                                                onclick={`event.stopPropagation(); window.location.href='${grandChild.href}'`}
+                                                class={`p-3 transition-colors duration-200 cursor-pointer ${
+                                                  isGrandChildActive 
+                                                    ? 'bg-focus text-white font-bold' 
+                                                    : 'text-dropdown-text hover:text-focus hover:bg-fourth'
+                                                }`}
+                                              >
+                                                  {t(grandChild.label)}
+                                              </li>
+                                            );
+                                          })}
+                                      </ul>
+                                  )}
+                              </li>
+                            );
+                          })}
+                      </ul>
+                  )}
+              </li>
+            );
+          })}
+      </ul>
+  </nav>
+  <slot name="right"/>
+  <slot></slot>
+</div>
 
-<nav class="space-x-0">
-    <ul class="flex">
-        {navItems.map(item => (
-        <li class="relative group space-y-0 placeholder-gray-300 p-4 cursor-pointer hover:transition-all hover:duration-500 transition-all duration-150 hover:inset-shadow-menu">
-            <a href={item.href} class="text-gray-100">
-                {t(item.label)}
-            </a>
-            {item.children && item.children.length > 0 && (
-                <ul class="absolute hidden group-hover:block bg-white shadow-lg">
-                    {item.children.map(child => (
-                        <li class="relative group">
-                            <a href={child.href} class="text-gray-700 hover:text-gray-900">
-                                {t(child.label)}
-                            </a>
-                            {child.children && child.children.length > 0 && (
-                                <ul class="absolute hidden group-hover:block bg-white shadow-lg">
-                                    {child.children.map(grandChild => (
-                                        <li>
-                                            <a href={grandChild.href} class="text-gray-700 hover:text-gray-900">
-                                                {t(grandChild.label)}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </li>
-        ))}
-    </ul>
-</nav>
+<script>
+  class NavIndicator {
+    private navMenu: HTMLElement | null;
+    private indicator: HTMLElement | null;
+    private navItems: NodeListOf<Element> | null;
+    private isHovering: boolean = false;
+    private resizeTimeout: number | null = null;
+
+    constructor() {
+      this.navMenu = document.getElementById('nav-menu');
+      this.indicator = document.getElementById('nav-indicator');
+      this.navItems = this.navMenu?.querySelectorAll('[data-nav-item]') || null;
+        if (this.navMenu && this.indicator && this.navItems) {
+        this.init();
+      }
+    }
+
+    private init(): void {
+      this.attachEventListeners();
+      this.showActiveIndicator();
+    }
+
+    private showActiveIndicator(): void {
+      // Mostra l'indicatore sulla voce attiva al caricamento della pagina
+      const activeItem = this.navMenu?.querySelector('[data-active="true"]');
+      if (activeItem) {
+        this.updateIndicator(activeItem);
+      }
+    }
+
+    private updateIndicator = (item: Element): void => {
+      if (!this.indicator || !this.navMenu) return;
+
+      const rect = item.getBoundingClientRect();
+      const menuRect = this.navMenu.getBoundingClientRect();
+      
+      const left = rect.left - menuRect.left;
+      const width = rect.width;
+        // Utilizzo di transform per performance migliori invece di left/width
+      this.indicator.style.transform = `translateX(${left}px) scaleX(${width / 100})`;
+      this.indicator.style.transformOrigin = 'left center';
+      this.indicator.style.opacity = '1';
+    }
+
+    private hideIndicator = (): void => {
+      if (!this.isHovering && this.indicator) {
+        // Se c'è una voce attiva, torna a quella, altrimenti nascondi
+        const activeItem = this.navMenu?.querySelector('[data-active="true"]');
+        if (activeItem) {
+          this.updateIndicator(activeItem);
+        } else {
+          this.indicator.style.opacity = '0';
+        }
+      }
+    }
+
+    private handleItemEnter = (item: Element) => (): void => {
+      this.isHovering = true;
+      this.updateIndicator(item);
+    }
+
+    private handleItemLeave = (): void => {
+      this.isHovering = false;
+      // Debounce per evitare flickering
+      setTimeout(this.hideIndicator, 150);
+    }
+
+    private handleMenuLeave = (): void => {
+      this.isHovering = false;
+      // Quando il mouse esce dal menu, torna alla voce attiva se esiste
+      const activeItem = this.navMenu?.querySelector('[data-active="true"]');
+      if (activeItem) {
+        this.updateIndicator(activeItem);
+      } else {
+        this.hideIndicator();
+      }
+    }
+
+    private handleResize = (): void => {
+      // Throttle resize events per performance
+      if (this.resizeTimeout) {
+        clearTimeout(this.resizeTimeout);
+      }
+      
+      this.resizeTimeout = window.setTimeout(() => {
+        if (this.indicator?.style.opacity === '1') {
+          const activeItem = this.navMenu?.querySelector('[data-nav-item]:hover');
+          if (activeItem) {
+            this.updateIndicator(activeItem);
+          }
+        }
+      }, 100);
+    }
+
+    private attachEventListeners(): void {
+      if (!this.navItems || !this.navMenu) return;
+
+      // Event listeners per ogni voce di menu
+      this.navItems.forEach(item => {
+        item.addEventListener('mouseenter', this.handleItemEnter(item), { passive: true });
+        item.addEventListener('mouseleave', this.handleItemLeave, { passive: true });
+      });
+
+      // Event listener per il menu principale
+      this.navMenu.addEventListener('mouseleave', this.handleMenuLeave, { passive: true });
+
+      // Event listener per resize con throttling
+      window.addEventListener('resize', this.handleResize, { passive: true });
+    }
+
+    // Metodo per cleanup se necessario
+    public destroy(): void {
+      if (!this.navItems || !this.navMenu) return;
+
+      this.navItems.forEach(item => {
+        item.removeEventListener('mouseenter', this.handleItemEnter(item));
+        item.removeEventListener('mouseleave', this.handleItemLeave);
+      });
+
+      this.navMenu.removeEventListener('mouseleave', this.handleMenuLeave);
+      window.removeEventListener('resize', this.handleResize);
+
+      if (this.resizeTimeout) {
+        clearTimeout(this.resizeTimeout);
+      }
+    }
+  }
+
+  // Inizializza quando il DOM è pronto
+  document.addEventListener('DOMContentLoaded', () => {
+    new NavIndicator();
+  });
+</script>

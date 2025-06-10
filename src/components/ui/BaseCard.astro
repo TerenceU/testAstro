@@ -1,0 +1,24 @@
+---
+
+---
+
+<div class="bg-card-background rounded-xl border border-card-border rounded-xl">
+    <!-- Header Slot -->
+    {Astro.slots.header && (
+        <div class="border-b border-card-border p-4">
+            <slot name="header" />
+        </div>
+    )}
+    
+    <!-- Body Slot (Main Content) -->
+    <div class="p-4">
+        <slot />
+    </div>
+    
+    <!-- Footer Slot -->
+    {Astro.slots.footer && (
+        <div class="border-t border-card-border p-4">
+            <slot name="footer" />
+        </div>
+    )}
+</div>

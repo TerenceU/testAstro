@@ -1,6 +1,5 @@
 {
-  "hello": "Bonjour",
-  "pages": {
+  "hello": "Bonjour",  "pages": {
     "index": {
       "title": "Bienvenue sur spesami!",
       "description": "Ceci est une démo d'une application React avec i18n et TypeScript."
@@ -16,5 +15,29 @@
     "contact": "Contact",
     "blog": "Blog",
     "services": "Services"
+  },  "input": {
+    "name": "Entrez votre nom",
+    "surname": "Entrez votre nom de famille",
+    "email": "Entrez votre email",
+    "message": "Entrez votre message",
+    "textbox": "Entrez votre texte ici...",
+    "password": "Entrez votre mot de passe",
+    "number": "Entrez un nombre",
+    "phone": "Téléphone (XXX) XXX-XXXX",
+    "fiscalCode": "Code Fiscal",
+    "date": "Date (JJ/MM/AAAA)",
+    "submit": "Envoyer",      "errors": {
+        "required": "Ce champ est obligatoire",
+        "email": "Veuillez entrer une adresse email valide",
+        "minLength": "Minimum {min} caractères requis",
+        "maxLength": "Maximum {max} caractères autorisés",
+        "min": "La valeur doit être au moins {min}",
+        "max": "La valeur ne peut pas dépasser {max}",
+        "pattern": "Le format saisi n'est pas valide"
+      },
+      "counter": {
+        "characters": "caractères",
+        "remaining": "restants"
+      }
   }
 }

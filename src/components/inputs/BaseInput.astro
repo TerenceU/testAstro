@@ -1,51 +1,480 @@
 ---
 export const prerender = false;
-const { ...props } = Astro.props;
+const { 
+  // Validation props
+  required = false,
+  min,
+  max,
+  minLength,
+  maxLength,
+  pattern,
+  mask,
+  // Error handling
+  showErrors = true,
+  errorMessage,
+  // UI Enhancement props
+  showCounter = false,
+  animatedLabel = false,
+  label,
+  // Other props
+  ...props 
+} = Astro.props;
 
-props.class = props.class ?? `
-w-full
-h-10 
-px-4 
-border 
-border-gray-300 
-rounded-md 
-focus:outline-none 
-focus:ring-2 
-focus:ring-blue-500
-`;
+// Import translation service if we need to show errors
+import { TranslationService } from '../../i18n/utils';
+const lang = Astro.params?.lang || 'en';
+const t = TranslationService.useTranslations(lang);
 
+// Set default styling to match BaseButton and BaseDropdown design system
+const defaultAttributes = {
+  class: 'w-full py-2.5 px-4 bg-input-background text-input-text border border-input-border rounded-xl font-default transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-focus focus:border-input-focus-border hover:shadow-md hover:shadow-border/30 placeholder:text-input-placeholder',
+};
+
+props.class = props.class ?? defaultAttributes.class;
 props.value = await Astro.slots.render('default') ?? props.value ?? '';
-
 props.type = props.type ?? 'text';
 
+// Set default placeholders based on input type
 switch (props.type) {
     case 'email':
-        props.class += ' placeholder-gray-500';
         props.placeholder = props.placeholder ?? 'Enter email here...';
         break;
     case 'password':
-        props.class += ' placeholder-gray-500';
         props.placeholder = props.placeholder ?? 'Enter password here...';
         break;
     case 'number': 
-        props.class += ' placeholder-gray-500';
         props.placeholder = props.placeholder ?? 'Enter number here...';
         break;
     case 'text':
-        props.class += ' placeholder-gray-500';
         props.placeholder = props.placeholder ?? 'Enter text here...';
         break;
+    case 'textbox':
+        props.placeholder = props.placeholder ?? 'Enter your message here...';
+        break;
     default:
-        props.class += ' placeholder-gray-500';
         break;
 }
 
+// Handle error states
+if (props.error) {
+  props.class += ' !border-input-error-border focus:!ring-error';
+}
+
+// Handle disabled states  
+if (props.disabled) {
+  props.class += ' cursor-not-allowed opacity-50 !bg-muted';
+}
+
+// Add validation attributes
+if (required) props.required = true;
+if (min !== undefined) props.min = min;
+if (max !== undefined) props.max = max;
+if (minLength !== undefined) props.minlength = minLength;
+if (maxLength !== undefined) props.maxlength = maxLength;
+if (pattern) props.pattern = pattern;
+
+// Generate unique ID for the input
+const inputId = `input-${Math.random().toString(36).substr(2, 9)}`;
+const isNumberInput = props.type === 'number';
+const isTextboxInput = props.type === 'textbox';
+
+// Create validation data attributes for client-side validation
+const validationData = {
+  'data-validation-required': required,
+  'data-validation-type': props.type,
+  'data-validation-min': min,
+  'data-validation-max': max,
+  'data-validation-min-length': minLength,
+  'data-validation-max-length': maxLength,
+  'data-validation-pattern': pattern,
+  'data-validation-mask': mask,
+  'data-validation-lang': lang
+};
+
+// Helper function to replace placeholders in error messages
+function formatErrorMessage(message: string, params: Record<string, any>): string {
+  return message.replace(/\{(\w+)\}/g, (match, key) => params[key] || match);
+}
 ---
 
-<input 
-    type={props.type}
-    class={props.class}
-    placeholder={props.placeholder}
-    value={props.value}
-    {...props}>
-</input>
+{isNumberInput ? (
+  <div class="input-wrapper">
+    {animatedLabel && label && (
+      <div class="animated-input-container">
+        <label for={inputId} class="animated-label">{label}</label>
+        <div class="custom-number-input">
+          <input 
+              id={inputId}
+              type={props.type}
+              class={props.class}
+              placeholder={animatedLabel ? '' : props.placeholder}
+              value={props.value}
+              {...validationData}
+              {...props}
+          />
+          <div class="spinner-buttons">
+            <button 
+              type="button" 
+              class="spinner-button up" 
+              onclick={`document.getElementById('${inputId}').stepUp(); document.getElementById('${inputId}').dispatchEvent(new Event('input'));`}
+              disabled={props.disabled}
+              aria-label="Increase value"
+            >
+              ▲
+            </button>
+            <button 
+              type="button" 
+              class="spinner-button down" 
+              onclick={`document.getElementById('${inputId}').stepDown(); document.getElementById('${inputId}').dispatchEvent(new Event('input'));`}
+              disabled={props.disabled}
+              aria-label="Decrease value"
+            >
+              ▼
+            </button>
+          </div>
+        </div>
+      </div>
+    ) || (
+      <div class="custom-number-input">
+        <input 
+            id={inputId}
+            type={props.type}
+            class={props.class}
+            placeholder={props.placeholder}
+            value={props.value}
+            {...validationData}
+            {...props}
+        />
+        <div class="spinner-buttons">
+          <button 
+            type="button" 
+            class="spinner-button up" 
+            onclick={`document.getElementById('${inputId}').stepUp(); document.getElementById('${inputId}').dispatchEvent(new Event('input'));`}
+            disabled={props.disabled}
+            aria-label="Increase value"
+          >
+            ▲
+          </button>
+          <button 
+            type="button" 
+            class="spinner-button down" 
+            onclick={`document.getElementById('${inputId}').stepDown(); document.getElementById('${inputId}').dispatchEvent(new Event('input'));`}
+            disabled={props.disabled}
+            aria-label="Decrease value"
+          >
+            ▼
+          </button>
+        </div>
+      </div>
+    )}
+    {showCounter && maxLength && (
+      <div class="word-counter external" id={`${inputId}-counter`}>
+        <span id={`${inputId}-current`}>0</span>/<span id={`${inputId}-max`}>{maxLength}</span> {t('input.counter.characters')}
+      </div>
+    )}
+    {showErrors && (
+      <div class="error-message" id={`${inputId}-error`} style="display: none;"></div>
+    )}
+  </div>
+) : isTextboxInput ? (
+  <div class="input-wrapper">
+    {animatedLabel && label ? (
+      <div class="animated-input-container">
+        <label for={inputId} class="animated-label">{label}</label>
+        <textarea 
+            id={inputId}
+            class={props.class + ' min-h-[100px] resize-y'}
+            placeholder=""
+            {...validationData}
+            {...props}
+        >{props.value}</textarea>
+        {showCounter && maxLength && (
+          <div class="word-counter internal" id={`${inputId}-counter`}>
+            <span id={`${inputId}-current`}>0</span>/<span id={`${inputId}-max`}>{maxLength}</span>
+          </div>
+        )}
+      </div>
+    ) : (
+      <>
+        <textarea 
+            id={inputId}
+            class={props.class + ' min-h-[100px] resize-y'}
+            placeholder={props.placeholder}
+            {...validationData}
+            {...props}
+        >{props.value}</textarea>
+        {showCounter && maxLength && (
+          <div class="word-counter internal" id={`${inputId}-counter`}>
+            <span id={`${inputId}-current`}>0</span>/<span id={`${inputId}-max`}>{maxLength}</span>
+          </div>
+        )}
+      </>
+    )}
+    {showErrors && (
+      <div class="error-message" id={`${inputId}-error`} style="display: none;"></div>
+    )}
+  </div>
+) : (
+  <div class="input-wrapper">
+    {animatedLabel && label ? (
+      <div class="animated-input-container">
+        <label for={inputId} class="animated-label">{label}</label>
+        <input 
+            id={inputId}
+            type={props.type}
+            class={props.class}
+            placeholder=""
+            value={props.value}
+            {...validationData}
+            {...props}
+        />
+      </div>
+    ) : (
+      <input 
+          id={inputId}
+          type={props.type}
+          class={props.class}
+          placeholder={props.placeholder}
+          value={props.value}
+          {...validationData}
+          {...props}
+      />
+    )}
+    {showCounter && maxLength && (
+      <div class="word-counter external" id={`${inputId}-counter`}>
+        <span id={`${inputId}-current`}>0</span>/<span id={`${inputId}-max`}>{maxLength}</span> {t('input.counter.characters')}
+      </div>
+    )}
+    {showErrors && (
+      <div class="error-message" id={`${inputId}-error`} style="display: none;"></div>
+    )}
+  </div>
+)}
+
+<script define:vars={{ inputId, lang, animatedLabel, t: {
+  required: t('input.errors.required'),
+  email: t('input.errors.email'),
+  minLength: t('input.errors.minLength'),
+  maxLength: t('input.errors.maxLength'),
+  min: t('input.errors.min'),
+  max: t('input.errors.max'),
+  pattern: t('input.errors.pattern'),
+  characters: t('input.counter.characters'),
+  remaining: t('input.counter.remaining')
+} }}>
+// Validation and mask functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const input = document.getElementById(inputId);
+  const errorDiv = document.getElementById(`${inputId}-error`);
+  const counterDiv = document.getElementById(`${inputId}-counter`);
+  const currentSpan = document.getElementById(`${inputId}-current`);
+  const maxSpan = document.getElementById(`${inputId}-max`);
+  const labelElement = input && animatedLabel ? input.parentElement.querySelector('.animated-label') : null;
+  
+  if (!input) return;
+
+  // Animated label functionality
+  function updateLabelState() {
+    if (labelElement && animatedLabel) {
+      const hasValue = input.value.length > 0;
+      const isFocused = document.activeElement === input;
+      
+      if (hasValue || isFocused) {
+        labelElement.classList.add('active');
+      } else {
+        labelElement.classList.remove('active');
+      }
+    }
+  }
+  // Initialize label state on page load
+  if (animatedLabel && labelElement) {
+    // Check initial state immediately
+    updateLabelState();
+    
+    // Add event listeners for label animation
+    input.addEventListener('focus', updateLabelState);
+    input.addEventListener('blur', updateLabelState);
+    input.addEventListener('input', updateLabelState);
+    
+    // Also check on window load to handle pre-filled forms
+    window.addEventListener('load', updateLabelState);
+  }
+  // Helper function to format error messages
+  function formatMessage(template, params) {
+    return template.replace(/\{(\w+)\}/g, (match, key) => params[key] || match);
+  }  // Character counter functionality
+  function updateCharacterCounter() {
+    if (counterDiv && currentSpan && maxSpan) {
+      const currentLength = input.value.length;
+      const maxLength = parseInt(maxSpan.textContent);
+      
+      currentSpan.textContent = currentLength;
+      
+      // Add warning/danger classes based on character count
+      const warningThreshold = maxLength * 0.8; // 80% of max length
+      const dangerThreshold = maxLength * 0.95; // 95% of max length
+      
+      // Reset classes
+      counterDiv.classList.remove('warning', 'danger');
+      currentSpan.classList.remove('warning', 'danger');
+      
+      if (currentLength >= dangerThreshold) {
+        counterDiv.classList.add('danger');
+        currentSpan.classList.add('danger');
+      } else if (currentLength >= warningThreshold) {
+        counterDiv.classList.add('warning');
+        currentSpan.classList.add('warning');
+      }
+    }
+  }
+
+  // Mask functionality
+  function applyMask(value, mask) {
+    if (!mask) return value;
+    
+    let maskedValue = '';
+    let valueIndex = 0;
+    
+    for (let i = 0; i < mask.length && valueIndex < value.length; i++) {
+      if (mask[i] === '9') {
+        if (/\d/.test(value[valueIndex])) {
+          maskedValue += value[valueIndex];
+          valueIndex++;
+        } else {
+          break;
+        }
+      } else if (mask[i] === 'A') {
+        if (/[a-zA-Z]/.test(value[valueIndex])) {
+          maskedValue += value[valueIndex];
+          valueIndex++;
+        } else {
+          break;
+        }
+      } else if (mask[i] === '*') {
+        maskedValue += value[valueIndex];
+        valueIndex++;
+      } else {
+        maskedValue += mask[i];
+      }
+    }
+    
+    return maskedValue;
+  }
+
+  // Validation function
+  function validateInput() {
+    const value = input.value;
+    const type = input.getAttribute('data-validation-type');
+    const required = input.getAttribute('data-validation-required') === 'true';
+    const min = input.getAttribute('data-validation-min');
+    const max = input.getAttribute('data-validation-max');
+    const minLength = input.getAttribute('data-validation-min-length');
+    const maxLength = input.getAttribute('data-validation-max-length');
+    const pattern = input.getAttribute('data-validation-pattern');
+    
+    let isValid = true;
+    let errorMessage = '';
+
+    // Required validation
+    if (required && !value.trim()) {
+      isValid = false;
+      errorMessage = t.required;
+    }
+    
+    // Only validate other rules if field has value
+    if (value.trim()) {
+      // Email validation
+      if (type === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          isValid = false;
+          errorMessage = t.email;
+        }
+      }
+      
+      // Number validations
+      if (type === 'number') {
+        const numValue = parseFloat(value);
+        if (!isNaN(numValue)) {
+          if (min !== null && numValue < parseFloat(min)) {
+            isValid = false;
+            errorMessage = formatMessage(t.min, { min });
+          }
+          if (max !== null && numValue > parseFloat(max)) {
+            isValid = false;
+            errorMessage = formatMessage(t.max, { max });
+          }
+        }
+      }
+      
+      // Length validations
+      if (minLength && value.length < parseInt(minLength)) {
+        isValid = false;
+        errorMessage = formatMessage(t.minLength, { min: minLength });
+      }
+      if (maxLength && value.length > parseInt(maxLength)) {
+        isValid = false;
+        errorMessage = formatMessage(t.maxLength, { max: maxLength });
+      }
+      
+      // Pattern validation
+      if (pattern) {
+        const regex = new RegExp(pattern);
+        if (!regex.test(value)) {
+          isValid = false;
+          errorMessage = t.pattern;
+        }
+      }
+    }
+
+    // Update UI based on validation
+    if (isValid) {
+      input.classList.remove('input-error');
+      if (errorDiv) {
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+      }
+    } else {
+      input.classList.add('input-error');
+      if (errorDiv) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = errorMessage;
+      }
+    }
+
+    return isValid;
+  }
+
+  // Apply mask on input
+  if (input.getAttribute('data-validation-mask')) {
+    input.addEventListener('input', function(e) {
+      const mask = input.getAttribute('data-validation-mask');
+      const cursorPosition = input.selectionStart;
+      const oldValue = input.value;
+      const newValue = applyMask(input.value.replace(/[^\w]/g, ''), mask);
+      
+      if (newValue !== oldValue) {
+        input.value = newValue;
+        // Restore cursor position
+        const newCursorPosition = Math.min(cursorPosition, newValue.length);
+        input.setSelectionRange(newCursorPosition, newCursorPosition);
+      }
+        // Validate after applying mask
+      setTimeout(() => {
+        validateInput();
+        updateCharacterCounter();
+      }, 0);
+    });
+  } else {
+    // Regular validation
+    input.addEventListener('input', () => {
+      validateInput();
+      updateCharacterCounter();
+    });
+    input.addEventListener('blur', validateInput);
+  }
+
+  // Initialize character counter on page load
+  updateCharacterCounter();
+});
+</script>

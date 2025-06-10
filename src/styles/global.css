@@ -1,25 +1,393 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary: #deb887; /* marrone chiaro */
-    --color-secondary: #8fbc8f; /* verde pastello */
-    --color-background: #f5f5dc; /* beige chiaro */
-    --color-accent: #f0e68c; /* giallo chiaro */
-    --color-text: #333333; /* grigio scuro per il testo */
-    --color-border: #d2b48c; /* marrone chiaro per i bordi */ 
-    --color-error: #ff6347; /* rosso pomodoro per gli errori */
-    --color-success: #98fb98; /* verde chiaro per i successi */
+    --color-first: #feaa88;
+    --color-second: #b3cab6;
+    --color-third: #e2d7e5; 
+    --color-fourth: #fff6ef;
+    --color-background: #faeeee;
+    --color-accent: #f0e68c;
+    --color-text:   #5d5470;
+    --color-border:#859688;
+    --color-error: #ff6347;
+    --color-success:#98fb98;
+    --color-focus: #ffab89;
 
     /* Font */
-    --font-family: 'Arial', sans-serif; /* Font principale */
-    --font-size-base: 16px; /* Dimensione base del font */
-    --font-size-large: 20px; /* Dimensione del font per titoli e testi importanti */
-    --font-weight-normal: 400; /* Peso normale del font */
-    --font-weight-bold: 700; /* Peso grassetto del font */
-    --line-height: 1.5; /* Altezza della linea per una buona leggibilità */
-    --border-radius: 8px; /* Raggio di curvatura per gli angoli */
+    --font-default: 'Quicksand', sans-serif;
  
     /* menu */
-    
+    --color-menu-background: var(--color-first);
     --inset-shadow-menu: inset 0px 5px 0px var(--color-border); 
+
+    /* Button */
+    --color-button-background: var(--color-first);
+    --color-button-background-secondary: var(--color-second);
+    --color-button-text-color: var(--color-text);
+    --color-button-hover-background: var(--color-first);
+    --color-button-hover-text-color: var(--color-text);
+
+    /* Input */
+    --color-input-background: var(--color-background);
+    --color-input-text: var(--color-text);
+    --color-input-border: var(--color-border);
+    --color-input-focus-border: var(--color-focus);
+    --color-input-placeholder: #a9a9a9; /* grigio scuro per i placeholder */
+    --color-input-error-border: var(--color-error);
+
+    /* Dropdown */
+    --color-dropdown-background: var(--color-background);
+    --color-dropdown-text: var(--color-text);
+    --color-dropdown-border: var(--color-border);
+
+    /* Card */
+    --color-card-background: var(--color-third);
+    --color-card-border: var(--color-border);
+    --color-card-text: var(--color-text);
+}
+
+/* dark mode */
+@media (prefers-color-scheme: dark) {
+    @theme {
+        --color-primary: #000 /* marrone scuro */
+    }
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 12px;
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--color-first);
+    border-radius: 6px;
+    border: 2px solid var(--color-border);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 6px;
+}
+
+/* Firefox */
+html {
+    scrollbar-color: var(--color-first) transparent;
+    scrollbar-width: thin;
+}
+
+/* Custom Number Input Spinner Styling */
+.custom-number-input {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-number-input input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  appearance: none;
+  padding-right: 3rem; /* Make space for custom buttons */
+  width: 100%;
+}
+
+/* Hide default browser spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.custom-number-input .spinner-buttons {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--color-input-border);
+  border-radius: 0 12px 12px 0; /* Match the input's border-radius exactly */
+  overflow: hidden;
+  background: var(--color-button-background);
+}
+
+.custom-number-input .spinner-button {
+  flex: 1;
+  background: var(--color-button-background);
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--color-button-text-color);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-family: var(--font-default);
+}
+
+.custom-number-input .spinner-button:hover {
+  background: var(--color-button-hover-background);
+  transform: scale(1.05);
+}
+
+.custom-number-input .spinner-button:active {
+  background: var(--color-focus);
+  transform: scale(0.98);
+}
+
+.custom-number-input .spinner-button.up {
+  border-bottom: 0.5px solid var(--color-border);
+  border-radius: 0 11px 0 0;
+}
+
+.custom-number-input .spinner-button.down {
+  border-top: 0.5px solid var(--color-border);
+  border-radius: 0 0 11px 0;
+}
+
+/* Disabled state for spinners */
+.custom-number-input input:disabled + .spinner-buttons {
+  pointer-events: none;
+}
+
+.custom-number-input input:disabled + .spinner-buttons .spinner-button {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background: var(--color-input-border);
+  color: var(--color-text);
+}
+
+/* Input Wrapper and Error Handling */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-wrapper:hover {
+  transform: translateY(-1px);
+}
+
+.input-error {
+  border-color: var(--color-input-error-border) !important;
+  box-shadow: 0 0 0 2px rgba(255, 99, 71, 0.2) !important;
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  font-family: var(--font-default);
+  padding-left: 0.5rem;
+  display: block;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom Number Input Error States */
+.custom-number-input .input-error + .spinner-buttons {
+  border-left-color: var(--color-input-error-border);
+}
+
+.custom-number-input .input-error + .spinner-buttons .spinner-button {
+  background: var(--color-error);
+  color: white;
+}
+
+.custom-number-input .input-error + .spinner-buttons .spinner-button:hover {
+  background: var(--color-error);
+  opacity: 0.8;
+}
+
+/* Word Counter Styles */
+.input-wrapper {
+  position: relative;
+}
+
+.word-counter {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  text-align: right;
+  margin-top: 0.25rem;
+  padding-right: 0.5rem;
+  font-family: var(--font-mono, 'Courier New', monospace);
+  transition: color 0.2s ease-in-out;
+}
+
+.word-counter.warning {
+  animation: pulse-warning 1s ease-in-out infinite;
+}
+
+.word-counter.danger {
+  animation: pulse-danger 1s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes pulse-danger {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Internal counter for textarea */
+.word-counter.internal {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  margin: 0;
+  padding: 4px 8px;
+  background: var(--color-second);
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e5e7eb);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 10;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+/* Dark mode support for internal counter */
+@media (prefers-color-scheme: dark) {
+  .word-counter.internal {
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--color-text-secondary, #9ca3af);
+    border-color: var(--color-border, #374151);
+  }
+}
+
+/* External counter for regular inputs */
+.word-counter.external {
+  margin-top: 0.25rem;
+  padding-right: 0.5rem;
+}
+
+.word-counter.warning {
+  color: var(--color-warning, #f59e0b);
+}
+
+.word-counter.danger {
+  color: var(--color-error, #ef4444);
+}
+
+.word-counter #current-count.warning {
+  color: var(--color-warning, #f59e0b);
+  font-weight: 600;
+}
+
+.word-counter #current-count.danger {
+  color: var(--color-error, #ef4444);
+  font-weight: 700;
+}
+
+/* Animated Label Styles */
+.animated-input-container {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.animated-input-container input,
+.animated-input-container textarea {
+  padding-top: 1.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.animated-label {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-input-placeholder, #9ca3af);
+  font-size: 1rem;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--color-input-background, #ffffff);
+  padding: 0 0.25rem;
+  z-index: 5;
+  font-family: var(--font-default);
+  will-change: transform, color, font-size;
+}
+
+/* Special positioning for textareas */
+.animated-input-container:has(textarea) .animated-label {
+  top: 2rem;
+  transform: translateY(0);
+}
+
+/* When textarea is focused or has content */
+.animated-input-container:has(textarea:focus) .animated-label,
+.animated-input-container:has(textarea) .animated-label.active {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--color-focus, #3b82f6);
+  font-weight: 500;
+}
+
+/* Active state - when input has value or is focused */
+.animated-label.active {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--color-focus, #3b82f6);
+  font-weight: 500;
+}
+
+/* Error state for animated labels */
+.animated-label.error {
+  color: var(--color-error, #ef4444);
+}
+
+/* Focus state */
+.animated-input-container:focus-within {
+  transform: translateY(-1px);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.animated-input-container:focus-within .animated-label {
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--color-focus, #3b82f6);
+  font-weight: 500;
+}
+
+/* Dark mode support for animated labels */
+@media (prefers-color-scheme: dark) {
+  .animated-label {
+    background: var(--color-input-background, #1f2937);
+  }
+}
+
+/* Demo page styling */
+.input-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+/* Make sections more visually distinct */
+.input-demo-section {
+  margin-bottom: 3rem;
 }

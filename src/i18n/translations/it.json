@@ -3,7 +3,7 @@
     "pages": {
         "index": {
             "title": "Benvenuto in spesami!",
-            "description": "Questa è una demo di un'applicazione React con i18n e TypeScript."
+            "description": "Questa è una demo di un`applicazione React con i18n e TypeScript."
         },
         "about": {
             "title": "Chi siamo",
@@ -16,5 +16,31 @@
         "contact": "Contatto",
         "blog": "Blog",
         "services": "Servizi"
+    },    
+    "input": {
+        "name": "Inserisci il tuo nome",
+        "surname": "Inserisci il tuo cognome",
+        "email": "Inserisci la tua email",
+        "message": "Inserisci il tuo messaggio",
+        "textbox": "Inserisci il tuo testo qui...",
+        "password": "Inserisci la tua password",
+        "number": "Inserisci un numero",
+        "phone": "Telefono (XXX) XXX-XXXX",
+        "fiscalCode": "Codice Fiscale",
+        "date": "Data (DD/MM/YYYY)",
+        "submit": "Invia",        
+        "errors": {
+            "required": "Questo campo è obbligatorio",
+            "email": "Inserisci un indirizzo email valido",
+            "minLength": "Minimo {min} caratteri richiesti",
+            "maxLength": "Massimo {max} caratteri consentiti",
+            "min": "Il valore deve essere almeno {min}",
+            "max": "Il valore non può superare {max}",
+            "pattern": "Il formato inserito non è valido"
+        },
+        "counter": {
+            "characters": "caratteri",
+            "remaining": "rimanenti"
+        }
     }
 }

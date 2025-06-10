@@ -1,8 +1,12 @@
 ---
+
+import BaseCard from '@/components/ui/BaseCard.astro';
 import BaseButton from '../../components/buttons/BaseButton.astro';
 import BaseText from '../../components/text/BaseText.astro';
 import { TranslationService } from '../../i18n/utils';
 import Layout from '../../layout/layout.astro';
+import BaseInput from '@/components/inputs/BaseInput.astro';
+import BaseDropdown from '@/components/dropdown/BaseDropdown.astro';
 
 // Genera anche la home statica per ogni lingua
 export function getStaticPaths() {
@@ -19,16 +23,45 @@ const t = TranslationService.useTranslations(lang);
             <meta name="description" content={t('pages.index.description')} />
         </Fragment>
 
-        <BaseText Type="h1" class="text-3xl font-bold text-gray-900 dark:text-white">
+        <BaseText Type="h1">
             {t('pages.index.title')}
         </BaseText>
 
-        <BaseText Type="p" class="text-gray-700 dark:text-gray-300">
+        <BaseText Type="p">
             {t('pages.index.description')}
         </BaseText>
 
         <BaseButton type="button">
             {t('pages.index.button')}
         </BaseButton>
+
+        <BaseDropdown>
+            cuai 
+            adf
+            asdfaga
+        </BaseDropdown>
+
+        <BaseCard>
         
+            <Fragment slot="header">
+                <BaseText Type="h2">
+                    {t('pages.index.title')}
+                </BaseText>
+            </Fragment>
+
+            {t('pages.index.description')}
+
+            <BaseInput type="text" placeholder={t('input.name')} required>
+            </BaseInput>
+            
+            
+            <Fragment slot="footer">
+                <BaseButton type="button">
+                    {t('pages.index.card.button')}
+                </BaseButton>
+            </Fragment>
+            
+        </BaseCard>
+        
+
     </Layout>

@@ -44,7 +44,7 @@ class TranslationServiceClass {
     }
 
     public languagesArray = Object.entries(this.i18n.languages).map(([key, value]) => ({
-      params: { lang: key },
+      params: { lang: key, flag: key },
       label: value,
     }));
 

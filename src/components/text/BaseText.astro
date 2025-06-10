@@ -4,7 +4,7 @@ const { lang } = Astro.params;
 let { Type, ...props } = Astro.props as Record<string, any>;
 export const prerender = false;
 if (!props.class) {
-  props.class = 'text-3xl font-bold text-gray-900 dark:text-white';
+  props.class = 'text-3xl font-bold';
 }
 
 var validTypes = ['h1', 'h2', 'h3', 'h4', 'h5'];

@@ -1,54 +1,7 @@
 ---
-const { onChange, ...props } = Astro.props as Record<string, any>;   
-export const prerender = false;
+const { ...props } = Astro.props
 
-props.class += ' bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500';
 
-let childrens: Array<{ key: string, value: string }> = [];
-const slotChilds = await Astro.slots.render('default');
 
-if (slotChilds && slotChilds.trim().length > 0) {
-  // Split by option tags or newlines, handle both <option> and plain text
-  const optionRegex = /<option[\s\S]*?<\/option>/g;
-  const options = slotChilds.match(optionRegex);
-  if (options) {
-    // There are <option> tags, use them directly
-    childrens = options.map(opt => {
-      const match = opt.match(/<option\s+value=\"([^\"]+)\"[^>]*>([\s\S]*?)<\/option>/);
-      if (match) {
-        return { key: match[1], value: opt };
-      } else {
-        return { key: opt, value: opt };
-      }
-    });
-  } else {
-    // No <option> tags, treat each line as a value
-    childrens = slotChilds.split('\n')
-      .map(line => line.trim())
-      .filter(line => line.length > 0)
-      .map(line => ({ key: line, value: line }));
-  }
-}
-
-if (childrens.length === 0) {
-  childrens = [{ key: '', value: 'Select an option' }];
-}
 ---
 
-<select {...props} class={props.class}>
-  {childrens.map(child => {
-    // If the child is an <option> element, inject selected if it matches props.value
-    if (child.value.trim().startsWith('<option')) {
-      // Add selected attribute if needed
-      if (child.key === props.value) {
-        // Insert selected before closing '>' of <option ...>
-        return <Fragment set:html={child.value.replace(/<option(.*?)>/, `<option$1 selected>`)}/>;
-      } else {
-        return <Fragment set:html={child.value}/>;
-      }
-    } else {
-      // Plain string option
-      return <option value={child.key} selected={child.key === props.value}>{child.value}</option>;
-    }
-  })}
-</select>

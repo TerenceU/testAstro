@@ -7,7 +7,7 @@ const { isSkeleton = false, ...props } = Astro.props as Record<string, any>;
 // Set default attributes for the button if not provided
 const defaultAttributes = {
   type: 'button',
-  class: 'text-base leading-normal text-(--color-text) bg-(--color-primary) p-5 space-x-5 space-y-5 tracking-wide shadow shadow-gray-500/80 border-(--color-border)-400/25 divide-x-14 border-t-6 border-l border-r-6 border-b hover:transform-none hover:transition-all hover:duration-200 hover:bg-(--color-border) hover:shadow-lg hover:shadow-gray-600 hover:border',
+  class: 'text-base leading-normal bg-button-background py-2.5 px-4 tracking-wide border border-dropdown-border rounded-xl font-default transition-all duration-200 hover:bg-button-hover-background hover:shadow-lg hover:shadow-border/50 focus:ring-2 focus:ring-focus',
 };
 
 props.type = props.type ?? defaultAttributes.type;
@@ -15,7 +15,7 @@ props.type = props.type ?? defaultAttributes.type;
 props.class = props.class ?? defaultAttributes.class;
 
 
-props.class += isSkeleton ? ' bg-gray-200 text-gray-400 cursor-not-allowed animate-pulse hover:none' : ' hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500';
+props.class += isSkeleton ? ' bg-gray-200 text-gray-400 cursor-not-allowed animate-pulse hover:bg-gray-200' : '';
 
 if(isSkeleton){
   //get the slot content and replace it with a lodigng text
