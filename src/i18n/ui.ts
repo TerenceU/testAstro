@@ -7,13 +7,13 @@ import pt from './translations/pt.json';
 import ru from './translations/ru.json';
 
 const languages = {
-  en: 'English',
-  fr: 'Français',
-  it: 'Italiano',
-  de: 'Deutsch',
-  es: 'Español',
-  pt: 'Português',
-  ru: 'Русский',
+  en: { name: 'English', flag: 'us' },
+  fr: { name: 'Français', flag: 'fr' },
+  it: { name: 'Italiano', flag: 'it' },
+  de: { name: 'Deutsch', flag: 'de' },
+  es: { name: 'Español', flag: 'es' },
+  pt: { name: 'Português', flag: 'pt' },
+  ru: { name: 'Русский', flag: 'ru' },
 };
 
 const defaultLang = 'en';
@@ -40,15 +40,14 @@ class uiTranslationService {
     constructor(lang: keyof typeof ui) {
         this.defaultLang = lang;
     }
-    
-    public languages = {
-        en: 'English',
-        fr: 'Français',
-        it: 'Italiano',
-        de: 'Deutsch',
-        es: 'Español',
-        pt: 'Português',
-        ru: 'Русский',
+      public languages = {
+        en: { name: 'English', flag: 'us' },
+        fr: { name: 'Français', flag: 'fr' },
+        it: { name: 'Italiano', flag: 'it' },
+        de: { name: 'Deutsch', flag: 'de' },
+        es: { name: 'Español', flag: 'es' },
+        pt: { name: 'Português', flag: 'pt' },
+        ru: { name: 'Русский', flag: 'ru' },
     };
 
     //add defaultLang to the class

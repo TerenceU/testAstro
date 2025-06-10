@@ -5,20 +5,32 @@ import { TranslationService } from "@/i18n/utils";
 const { lang, ...props } = Astro.props;
 const currentPath = Astro.url.pathname;
 const languages = TranslationService.languagesArray;
----
 
-<BaseDropdown id="lang-dropdown" value={currentPath} {...props}>
-  {languages.map(langObj => (
-    <option value={`/${langObj.params.lang}/`}><img src={`/src/img/${langObj.params.lang}.png`} alt={langObj.label}>{langObj.label}</img></option>
-  ))}
-</BaseDropdown>
+// Trasforma l'array delle lingue nel formato richiesto dal BaseDropdown
+const languageOptions = languages.map(langObj => ({
+  value: `/${langObj.params.lang}/`,
+  label: langObj.label,
+  img: `https://flagsapi.com/${langObj.params.flag.toUpperCase()}/flat/32.png`,
+  alt: langObj.label
+}));
+---
+<BaseDropdown 
+    id="lang-dropdown" 
+    value={currentPath} 
+    options={languageOptions}
+    customDropdown={true}
+    selectedLayout="icon-only"
+    autoWidth={true}
+    menuAutoWidth={true}
+    {...props}
+  />
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function() {
-    const dropdown = document.getElementById('lang-dropdown');
+    const dropdown = document.querySelector('[data-dropdown-id="lang-dropdown"]');
     if (dropdown) {
       dropdown.addEventListener('change', function(e) {
-        const val = e.target.value;
+        const val = e.detail.value;
         if (val.startsWith('/')) {
           window.location.pathname = val;
         }

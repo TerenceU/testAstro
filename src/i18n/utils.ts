@@ -34,18 +34,15 @@ class TranslationServiceClass {
       return function t(key: keyof typeof i18n.ui[typeof i18n.defaultLang] | string | undefined) {
         if (key === undefined || key === '') {
             return key;
-        }
-        // Try to resolve in selected lang, fallback to defaultLang
+        }        // Try to resolve in selected lang, fallback to defaultLang
         return (
-          resolveKey(i18n.ui[lang], key) ??
+          (lang && resolveKey(i18n.ui[lang as keyof typeof i18n.ui], key)) ??
           resolveKey(i18n.ui[i18n.defaultLang], key)
         );
       }
-    }
-
-    public languagesArray = Object.entries(this.i18n.languages).map(([key, value]) => ({
-      params: { lang: key, flag: key },
-      label: value,
+    }    public languagesArray = Object.entries(this.i18n.languages).map(([key, value]) => ({
+      params: { lang: key, flag: value.flag },
+      label: value.name,
     }));
 
 }

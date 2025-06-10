@@ -7,6 +7,7 @@ import { TranslationService } from '../../i18n/utils';
 import Layout from '../../layout/layout.astro';
 import BaseInput from '@/components/inputs/BaseInput.astro';
 import BaseDropdown from '@/components/dropdown/BaseDropdown.astro';
+import TranslateDropdown from '@/components/dropdown/TranslateDropdown.astro';
 
 // Genera anche la home statica per ogni lingua
 export function getStaticPaths() {
@@ -35,11 +36,65 @@ const t = TranslationService.useTranslations(lang);
             {t('pages.index.button')}
         </BaseButton>
 
-        <BaseDropdown>
-            cuai 
-            adf
-            asdfaga
+        <!-- Dropdown semplice con slot content -->
+        <BaseDropdown id="simple-dropdown" placeholder="Scegli un'opzione">
+            <option value="option1">Opzione 1</option>
+            <option value="option2">Opzione 2</option>
+            <option value="option3">Opzione 3</option>
         </BaseDropdown>
+
+        <!-- Dropdown con opzioni predefinite (array) -->
+        <BaseDropdown 
+            id="predefined-dropdown" 
+            placeholder="Seleziona una categoria"
+            options={[
+                { value: "tech", label: "Tecnologia" },
+                { value: "design", label: "Design" },
+                { value: "business", label: "Business" }
+            ]}
+        />
+
+        <!-- Dropdown con larghezza automatica per il bottone -->
+        <BaseDropdown 
+            id="auto-width-dropdown" 
+            placeholder="Auto width"
+            autoWidth={true}
+            options={[
+                { value: "short", label: "Breve" },
+                { value: "medium", label: "Opzione media" },
+                { value: "long", label: "Opzione molto molto lunga" }
+            ]}
+            customDropdown={true}
+        />
+
+        <!-- Dropdown per le lingue con immagini (solo icona) -->
+        <TranslateDropdown lang={lang} />
+
+        <!-- Esempio di dropdown con menu auto-width -->
+        <BaseDropdown 
+            id="menu-auto-width-dropdown" 
+            placeholder="Menu auto width"
+            menuAutoWidth={true}
+            options={[
+                { value: "option1", label: "Prima opzione con testo molto molto molto lungo per testare l'adattamento", img: "https://flagsapi.com/IT/flat/32.png" },
+                { value: "option2", label: "Breve", img: "https://flagsapi.com/FR/flat/32.png" },
+                { value: "option3", label: "Opzione di media lunghezza per confronto", img: "https://flagsapi.com/DE/flat/32.png" }
+            ]}
+            customDropdown={true}
+        />
+
+        <!-- Confronto: stesso dropdown SENZA menuAutoWidth -->
+        <BaseDropdown 
+            id="menu-fixed-width-dropdown" 
+            placeholder="Menu larghezza fissa"
+            menuAutoWidth={false}
+            options={[
+                { value: "option1", label: "Prima opzione con testo molto molto molto lungo per testare l'adattamento", img: "https://flagsapi.com/IT/flat/32.png" },
+                { value: "option2", label: "Breve", img: "https://flagsapi.com/FR/flat/32.png" },
+                { value: "option3", label: "Opzione di media lunghezza per confronto", img: "https://flagsapi.com/DE/flat/32.png" }
+            ]}
+            customDropdown={true}
+        />
 
         <BaseCard>
         

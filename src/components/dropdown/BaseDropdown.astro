@@ -1,7 +1,439 @@
 ---
-const { ...props } = Astro.props
+import BaseButton from '../buttons/BaseButton.astro';
 
+interface Props {
+  id?: string;
+  value?: string;
+  options?: Array<{ value: string; label: string; img?: string; alt?: string }>;
+  placeholder?: string;
+  class?: string;
+  disabled?: boolean;
+  required?: boolean;
+  name?: string;
+  customDropdown?: boolean;
+  selectedLayout?: 'default' | 'icon-only' | 'text-only' | 'custom';
+  customSelectedRender?: (option: { value: string; label: string; img?: string; alt?: string }) => string;
+  autoWidth?: boolean; // Per il bottone trigger
+  menuAutoWidth?: boolean; // Per il menu delle opzioni
+}
 
+const { 
+  id,
+  value,
+  options = [],
+  placeholder = "Seleziona un'opzione",
+  class: className = "",
+  disabled = false,
+  required = false,
+  name,
+  customDropdown = false,
+  selectedLayout = 'default',
+  customSelectedRender,
+  autoWidth = false,
+  menuAutoWidth = false,
+  ...props 
+} = Astro.props;
 
+// Se non ci sono opzioni passate come props, prendi il contenuto dello slot
+const hasSlotContent = Astro.slots.has('default');
+const isCustomSelect = !hasSlotContent && options.length > 0;
+const hasImagesInOptions = options.some(option => option.img);
+
+// Se abbiamo immagini nelle opzioni, forziamo il dropdown custom
+const shouldUseCustomDropdown = customDropdown || hasImagesInOptions;
 ---
+
+{shouldUseCustomDropdown && isCustomSelect ? (
+  <!-- Custom dropdown with images support -->
+  <div class={`custom-dropdown relative ${autoWidth ? 'inline-block' : 'w-full'} ${className}`} data-dropdown-id={id} data-selected-layout={selectedLayout}>
+    <!-- Hidden input for form submission -->
+    <input type="hidden" name={name} value={value} id={id} />
+    
+    <!-- Trigger button usando BaseButton -->
+    <BaseButton
+      type="button"
+      class={`
+        custom-dropdown-trigger text-left
+        ${autoWidth ? 'w-auto' : 'w-full'}
+        px-4 py-3
+        bg-[var(--color-dropdown-background)]
+        text-[var(--color-dropdown-text)]
+        border border-[var(--color-dropdown-border)]
+        rounded-xl
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[var(--color-focus)]
+        focus:border-[var(--color-focus)]
+        transition-all duration-200
+        cursor-pointer
+        font-[var(--font-default)]
+        hover:shadow-lg
+        hover:-translate-y-0.5
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        disabled:hover:translate-y-0
+        disabled:hover:shadow-none
+        pr-12
+        flex items-center gap-2
+        relative
+      `}
+      disabled={disabled}
+      aria-haspopup="listbox"
+      aria-expanded="false"
+    >
+      {value ? (
+        <span class="flex items-center gap-2">
+          {selectedLayout === 'icon-only' ? (
+            options.find(opt => opt.value === value)?.img && (
+              <img 
+                src={options.find(opt => opt.value === value)?.img} 
+                alt={options.find(opt => opt.value === value)?.alt || ""} 
+                class="w-5 h-5 object-cover rounded"
+              />
+            )
+          ) : selectedLayout === 'text-only' ? (
+            options.find(opt => opt.value === value)?.label || placeholder
+          ) : selectedLayout === 'custom' && customSelectedRender ? (
+            <Fragment set:html={customSelectedRender(options.find(opt => opt.value === value) || { value: '', label: '' })} />
+          ) : (
+            <>
+              {options.find(opt => opt.value === value)?.img && (
+                <img 
+                  src={options.find(opt => opt.value === value)?.img} 
+                  alt={options.find(opt => opt.value === value)?.alt || ""} 
+                  class="w-5 h-5 object-cover rounded"
+                />
+              )}
+              {options.find(opt => opt.value === value)?.label || placeholder}
+            </>
+          )}
+        </span>
+      ) : (
+        <span class="text-[var(--color-input-placeholder)]">{placeholder}</span>
+      )}
+      
+      <!-- Dropdown arrow integrato nel button -->
+      <svg class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-dropdown-text)] transition-transform duration-200" width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </BaseButton>    <!-- Dropdown menu -->
+    <div class={`
+      custom-dropdown-menu absolute z-50 mt-1
+      ${menuAutoWidth ? 'w-max menu-auto-width' : 'w-full'}
+      bg-[var(--color-dropdown-background)]
+      border border-[var(--color-dropdown-border)]
+      rounded-xl
+      shadow-lg
+      max-h-60 overflow-y-auto
+      hidden
+    `}>
+      {options.map(option => (
+        <button
+          type="button"
+          class={`
+            custom-dropdown-option text-left px-4 py-3
+            ${menuAutoWidth ? 'w-full whitespace-nowrap' : 'w-full'}
+            hover:bg-[var(--color-second)]
+            focus:bg-[var(--color-second)]
+            focus:outline-none
+            transition-colors duration-150
+            flex items-center gap-2
+            first:rounded-t-xl last:rounded-b-xl
+          `}
+          data-value={option.value}
+        >
+          {option.img && (
+            <img 
+              src={option.img} 
+              alt={option.alt || option.label} 
+              class="w-5 h-5 object-cover rounded"
+            />
+          )}
+          <span>{option.label}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+) : isCustomSelect ? (
+  <!-- Custom dropdown with predefined options -->
+  <div class={`relative w-full ${className}`}>
+    <select
+      id={id}
+      name={name}
+      value={value}
+      disabled={disabled}
+      required={required}
+      class="
+        w-full
+        px-4 py-3
+        bg-[var(--color-dropdown-background)]
+        text-[var(--color-dropdown-text)]
+        border border-[var(--color-dropdown-border)]
+        rounded-xl
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[var(--color-focus)]
+        focus:border-[var(--color-focus)]
+        transition-all duration-200
+        appearance-none
+        cursor-pointer
+        font-[var(--font-default)]
+        hover:shadow-lg
+        hover:-translate-y-0.5
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        disabled:hover:translate-y-0
+        disabled:hover:shadow-none
+        pr-12
+      "
+      {...props}
+    >
+      {placeholder && (
+        <option value="" disabled selected={!value}>
+          {placeholder}
+        </option>
+      )}
+      {options.map(option => (
+        <option value={option.value} selected={value === option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+    
+    <!-- Custom dropdown arrow -->
+    <div class="
+      absolute right-4 top-1/2 -translate-y-1/2
+      pointer-events-none
+      text-[var(--color-dropdown-text)]
+      transition-transform duration-200
+    ">
+      <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+) : (
+  <!-- Native select for slot content or simple usage -->
+  <div class={`relative w-full ${className}`}>
+    <select
+      id={id}
+      name={name}
+      value={value}
+      disabled={disabled}
+      required={required}
+      class="
+        w-full
+        px-4 py-3
+        bg-[var(--color-dropdown-background)]
+        text-[var(--color-dropdown-text)]
+        border border-[var(--color-dropdown-border)]
+        rounded-xl
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[var(--color-focus)]
+        focus:border-[var(--color-focus)]
+        transition-all duration-200
+        appearance-none
+        cursor-pointer
+        font-[var(--font-default)]
+        hover:shadow-lg
+        hover:-translate-y-0.5
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        disabled:hover:translate-y-0
+        disabled:hover:shadow-none
+        pr-12
+      "
+      {...props}
+    >
+      {placeholder && !value && (
+        <option value="" disabled selected>
+          {placeholder}
+        </option>
+      )}
+      <slot />
+    </select>
+    
+    <!-- Custom dropdown arrow -->
+    <div class="
+      absolute right-4 top-1/2 -translate-y-1/2
+      pointer-events-none
+      text-[var(--color-dropdown-text)]
+      transition-transform duration-200
+    ">
+      <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+)}
+
+<script>
+  // Custom dropdown functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const customDropdowns = document.querySelectorAll('.custom-dropdown');
+    
+    customDropdowns.forEach(dropdown => {
+      const trigger = dropdown.querySelector('.custom-dropdown-trigger') as HTMLButtonElement;
+      const menu = dropdown.querySelector('.custom-dropdown-menu') as HTMLElement;
+      const hiddenInput = dropdown.querySelector('input[type="hidden"]') as HTMLInputElement;
+      const options = dropdown.querySelectorAll('.custom-dropdown-option');
+      const arrow = dropdown.querySelector('svg') as SVGElement;
+      
+      if (!trigger || !menu || !hiddenInput) return;
+      
+      // Toggle dropdown
+      trigger.addEventListener('click', function() {
+        const isOpen = menu.classList.contains('hidden');
+        
+        // Close all other dropdowns
+        document.querySelectorAll('.custom-dropdown-menu').forEach(otherMenu => {
+          if (otherMenu !== menu) {
+            otherMenu.classList.add('hidden');
+            const otherTrigger = otherMenu.parentElement?.querySelector('.custom-dropdown-trigger') as HTMLButtonElement;
+            const otherArrow = otherMenu.parentElement?.querySelector('svg') as SVGElement;
+            if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+            if (otherArrow) otherArrow.style.transform = 'translateY(-50%) rotate(0deg)';
+          }
+        });
+        
+        if (isOpen) {
+          menu.classList.remove('hidden');
+          trigger.setAttribute('aria-expanded', 'true');
+          if (arrow) arrow.style.transform = 'translateY(-50%) rotate(180deg)';
+        } else {
+          menu.classList.add('hidden');
+          trigger.setAttribute('aria-expanded', 'false');
+          if (arrow) arrow.style.transform = 'translateY(-50%) rotate(0deg)';
+        }
+      });
+        // Handle option selection
+      options.forEach(option => {
+        option.addEventListener('click', function(this: HTMLButtonElement) {
+          const value = this.getAttribute('data-value');
+          const img = this.querySelector('img');
+          const textElement = this.querySelector('span');
+          const text = textElement?.textContent || '';
+          
+          // Update hidden input
+          hiddenInput.value = value || '';
+          
+          // Get layout type from dropdown data attribute
+          const selectedLayout = dropdown.getAttribute('data-selected-layout') || 'default';
+          
+          // Update trigger display based on layout
+          const triggerContent = trigger.querySelector('span');
+          if (triggerContent) {
+            if (selectedLayout === 'icon-only' && img) {
+              triggerContent.innerHTML = `<img src="${img.src}" alt="${img.alt}" class="w-5 h-5 object-cover rounded" />`;
+              triggerContent.className = 'flex items-center gap-2';
+            } else if (selectedLayout === 'text-only') {
+              triggerContent.textContent = text;
+              triggerContent.className = '';
+            } else {
+              // Default layout: icon + text
+              if (img) {
+                triggerContent.innerHTML = `
+                  <img src="${img.src}" alt="${img.alt}" class="w-5 h-5 object-cover rounded" />
+                  ${text}
+                `;
+                triggerContent.className = 'flex items-center gap-2';
+              } else {
+                triggerContent.textContent = text;
+                triggerContent.className = '';
+              }
+            }
+          }
+          
+          // Close dropdown
+          menu.classList.add('hidden');
+          trigger.setAttribute('aria-expanded', 'false');
+          if (arrow) arrow.style.transform = 'translateY(-50%) rotate(0deg)';
+          
+          // Trigger change event for external listeners
+          const changeEvent = new CustomEvent('change', {
+            detail: { value: value, label: text },
+            bubbles: true
+          });
+          dropdown.dispatchEvent(changeEvent);
+        });
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target as Node)) {
+          menu.classList.add('hidden');
+          trigger.setAttribute('aria-expanded', 'false');
+          if (arrow) arrow.style.transform = 'translateY(-50%) rotate(0deg)';
+        }
+      });
+      
+      // Keyboard navigation
+      trigger.addEventListener('keydown', function(e: KeyboardEvent) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          trigger.click();
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Additional custom styling for better browser compatibility */
+  select:focus + div svg {
+    transform: translateY(-50%) rotate(180deg);
+  }
+  
+  /* Custom dropdown scrollbar */
+  .custom-dropdown-menu {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-first) transparent;
+  }
+  
+  .custom-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+  }
+    .custom-dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--color-first);
+    border-radius: 3px;
+  }
+  
+  /* Auto width menu styling */
+  .custom-dropdown-menu.menu-auto-width {
+    width: max-content !important;
+    min-width: 100%;
+  }
+  
+  .custom-dropdown-menu.menu-auto-width .custom-dropdown-option {
+    width: auto !important;
+    white-space: nowrap;
+  }
+  
+  /* For browsers that don't support CSS custom properties fallback */
+  @supports not (color: var(--color-dropdown-background)) {
+    select, .custom-dropdown-trigger {
+      background-color: #faeeee;
+      color: #5d5470;
+      border-color: #859688;
+    }
+    
+    select:focus, .custom-dropdown-trigger:focus {
+      border-color: #ffab89;
+    }
+    
+    .custom-dropdown-menu {
+      background-color: #faeeee;
+      border-color: #859688;
+    }
+    
+    .custom-dropdown-option:hover {
+      background-color: #b3cab6;
+    }
+  }
+</style>
 
