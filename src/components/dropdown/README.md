@@ -1,26 +1,24 @@
 # BaseDropdown Component
 
-Il componente `BaseDropdown` è un dropdown completamente personalizzabile che supporta più modalità di utilizzo e layout.
+Il componente `BaseDropdown` è un dropdown completamente personalizzabile con **auto-sizing intelligente** e supporto per **slot personalizzati**.
 
-## Funzionalità
+## 🚀 Nuove Funzionalità v2.0
 
-### 🎯 **Modalità di Utilizzo**
+### ✨ **Auto-Sizing Intelligente**
+- **Nessun parametro necessario**: Il dropdown si adatta automaticamente all'opzione più lunga
+- **Bottone auto-width**: Si ridimensiona in base al contenuto selezionato
+- **Menu ottimizzato**: Si posiziona intelligentemente per evitare overflow
 
-1. **Dropdown con Slot Content** (HTML nativo)
-2. **Dropdown con Array di Opzioni** (select nativo)
-3. **Dropdown Custom con Immagini** (completamente personalizzato)
-
-### 🎨 **Layout per Voce Selezionata**
-
+### 🎨 **Layout Personalizzabili**
 - `default`: Icona + testo (se disponibili)
-- `icon-only`: Solo l'icona
+- `icon-only`: Solo l'icona  
 - `text-only`: Solo il testo
 - `custom`: Layout personalizzato tramite funzione
+- `slot`: **NUOVO** - Slot completamente personalizzabile
 
 ### 📏 **Controllo Larghezza**
 
-- `autoWidth`: Il bottone si adatta alla larghezza del contenuto
-- `menuAutoWidth`: Il menu delle opzioni si adatta alla larghezza del proprio contenuto
+- `fullWidth`: Forza il dropdown a occupare tutta la larghezza disponibile (default: auto-sizing)
 
 ## Props
 
@@ -35,16 +33,51 @@ interface Props {
   required?: boolean;
   name?: string;
   customDropdown?: boolean;
-  selectedLayout?: 'default' | 'icon-only' | 'text-only' | 'custom';
+  selectedLayout?: 'default' | 'icon-only' | 'text-only' | 'custom' | 'slot';
   customSelectedRender?: (option: { value: string; label: string; img?: string; alt?: string }) => string;
-  autoWidth?: boolean; // Per il bottone trigger
-  menuAutoWidth?: boolean; // Per il menu delle opzioni
+  fullWidth?: boolean; // Forza full width invece di auto-sizing
 }
 ```
 
 ## Esempi di Utilizzo
 
-### 1. Dropdown Semplice con Slot
+### 1. Dropdown Auto-Width (Default)
+
+```astro
+<BaseDropdown 
+  id="auto-width"
+  options={[
+    { value: "short", label: "Breve" },
+    { value: "very-long", label: "Questa è un'opzione molto lunga" }
+  ]}
+/>
+<!-- Il dropdown si adatterà automaticamente all'opzione più lunga -->
+```
+
+### 2. Dropdown con Slot Personalizzato
+
+```astro
+<BaseDropdown 
+  id="custom-slot"
+  selectedLayout="slot"
+  options={languageOptions}
+>
+  <div slot="selected" class="flex items-center gap-2">
+    <img src="current-flag.png" class="w-4 h-4" />
+    <span class="font-medium">Lingua Selezionata</span>
+  </div>
+</BaseDropdown>
+
+<script>
+// Ascolta gli eventi per aggiornare lo slot dinamicamente
+document.addEventListener('slotUpdate', (e) => {
+  const { value, label, img } = e.detail;
+  // Aggiorna il contenuto dello slot con i nuovi dati
+});
+</script>
+```
+
+### 3. Dropdown Semplice con Slot
 
 ```astro
 <BaseDropdown id="simple" placeholder="Scegli un'opzione">
@@ -53,7 +86,7 @@ interface Props {
 </BaseDropdown>
 ```
 
-### 2. Dropdown con Array di Opzioni
+### 4. Dropdown con Array di Opzioni
 
 ```astro
 <BaseDropdown 

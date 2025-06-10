@@ -47,25 +47,21 @@ const t = TranslationService.useTranslations(lang);
         <BaseDropdown 
             id="predefined-dropdown" 
             placeholder="Seleziona una categoria"
-            options={[
-                { value: "tech", label: "Tecnologia" },
-                { value: "design", label: "Design" },
-                { value: "business", label: "Business" }
-            ]}
-        />
+        >
+            <button type="button" data-value="tech" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Tecnologia</button>
+            <button type="button" data-value="design" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Design</button>
+            <button type="button" data-value="business" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Business</button>
+        </BaseDropdown>
 
         <!-- Dropdown con larghezza automatica per il bottone -->
         <BaseDropdown 
             id="auto-width-dropdown" 
             placeholder="Auto width"
-            autoWidth={true}
-            options={[
-                { value: "short", label: "Breve" },
-                { value: "medium", label: "Opzione media" },
-                { value: "long", label: "Opzione molto molto lunga" }
-            ]}
-            customDropdown={true}
-        />
+        >
+            <button type="button" data-value="short" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Breve</button>
+            <button type="button" data-value="medium" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Opzione media</button>
+            <button type="button" data-value="long" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Opzione molto molto lunga</button>
+        </BaseDropdown>
 
         <!-- Dropdown per le lingue con immagini (solo icona) -->
         <TranslateDropdown lang={lang} />
@@ -74,27 +70,39 @@ const t = TranslationService.useTranslations(lang);
         <BaseDropdown 
             id="menu-auto-width-dropdown" 
             placeholder="Menu auto width"
-            menuAutoWidth={true}
-            options={[
-                { value: "option1", label: "Prima opzione con testo molto molto molto lungo per testare l'adattamento", img: "https://flagsapi.com/IT/flat/32.png" },
-                { value: "option2", label: "Breve", img: "https://flagsapi.com/FR/flat/32.png" },
-                { value: "option3", label: "Opzione di media lunghezza per confronto", img: "https://flagsapi.com/DE/flat/32.png" }
-            ]}
-            customDropdown={true}
-        />
+        >
+            <button type="button" data-value="option1" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
+                <img src="https://flagsapi.com/IT/flat/32.png" alt="Italia" class="w-5 h-5 object-cover rounded" />
+                Prima opzione con testo molto molto molto lungo per testare l'adattamento
+            </button>
+            <button type="button" data-value="option2" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
+                <img src="https://flagsapi.com/FR/flat/32.png" alt="Francia" class="w-5 h-5 object-cover rounded" />
+                Breve
+            </button>
+            <button type="button" data-value="option3" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
+                <img src="https://flagsapi.com/DE/flat/32.png" alt="Germania" class="w-5 h-5 object-cover rounded" />
+                Opzione di media lunghezza per confronto
+            </button>
+        </BaseDropdown>
 
         <!-- Confronto: stesso dropdown SENZA menuAutoWidth -->
         <BaseDropdown 
             id="menu-fixed-width-dropdown" 
             placeholder="Menu larghezza fissa"
-            menuAutoWidth={false}
-            options={[
-                { value: "option1", label: "Prima opzione con testo molto molto molto lungo per testare l'adattamento", img: "https://flagsapi.com/IT/flat/32.png" },
-                { value: "option2", label: "Breve", img: "https://flagsapi.com/FR/flat/32.png" },
-                { value: "option3", label: "Opzione di media lunghezza per confronto", img: "https://flagsapi.com/DE/flat/32.png" }
-            ]}
-            customDropdown={true}
-        />
+        >
+            <button type="button" data-value="option1" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
+                <img src="https://flagsapi.com/IT/flat/32.png" alt="Italia" class="w-5 h-5 object-cover rounded" />
+                Prima opzione con testo molto molto molto lungo per testare l'adattamento
+            </button>
+            <button type="button" data-value="option2" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
+                <img src="https://flagsapi.com/FR/flat/32.png" alt="Francia" class="w-5 h-5 object-cover rounded" />
+                Breve
+            </button>
+            <button type="button" data-value="option3" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
+                <img src="https://flagsapi.com/DE/flat/32.png" alt="Germania" class="w-5 h-5 object-cover rounded" />
+                Opzione di media lunghezza per confronto
+            </button>
+        </BaseDropdown>
 
         <BaseCard>
         

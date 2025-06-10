@@ -1,0 +1,72 @@
+---
+import BaseDropdown from "./BaseDropdown.astro";
+import { TranslationService } from "@/i18n/utils";
+
+const { lang, ...props } = Astro.props;
+const currentPath = Astro.url.pathname;
+const languages = TranslationService.languagesArray;
+
+// Trasforma l'array delle lingue nel formato richiesto dal BaseDropdown
+const languageOptions = languages.map(langObj => ({
+  value: `/${langObj.params.lang}/`,
+  label: langObj.label,
+  img: `https://flagsapi.com/${langObj.params.flag.toUpperCase()}/flat/32.png`,
+  alt: langObj.label
+}));
+
+// Trova la lingua corrente per lo slot
+const currentLang = languages.find(langObj => currentPath.includes(`/${langObj.params.lang}/`));
+const currentFlag = currentLang ? `https://flagsapi.com/${currentLang.params.flag.toUpperCase()}/flat/32.png` : '';
+---
+
+<BaseDropdown 
+    id="lang-dropdown-slot" 
+    value={currentPath} 
+    options={languageOptions}
+    customDropdown={true}
+    selectedLayout="slot"
+    {...props}
+>
+  <!-- Slot personalizzato per la selezione -->
+  <div slot="selected" class="flex items-center gap-2" id="lang-selected-content">
+    <img 
+      src={currentFlag} 
+      alt={currentLang?.label || 'Language'} 
+      class="w-5 h-5 object-cover rounded shadow-sm"
+    />
+    <span class="text-sm font-medium">{currentLang?.label || 'Select Language'}</span>
+  </div>
+</BaseDropdown>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdown = document.querySelector('[data-dropdown-id="lang-dropdown-slot"]');
+    
+    if (dropdown) {
+      // Gestisci gli eventi di cambiamento
+      dropdown.addEventListener('change', function(e) {
+        const val = e.detail.value;
+        if (val.startsWith('/')) {
+          window.location.pathname = val;
+        }
+      });
+      
+      // Gestisci l'aggiornamento dello slot
+      dropdown.addEventListener('slotUpdate', function(e) {
+        const { value, label, img, alt } = e.detail;
+        const slotContent = document.getElementById('lang-selected-content');
+        
+        if (slotContent && img) {
+          slotContent.innerHTML = `
+            <img 
+              src="${img}" 
+              alt="${alt || label}" 
+              class="w-5 h-5 object-cover rounded shadow-sm"
+            />
+            <span class="text-sm font-medium">${label}</span>
+          `;
+        }
+      });
+    }
+  });
+</script>
