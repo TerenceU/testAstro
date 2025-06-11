@@ -305,7 +305,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .animated-input-container input,
 .animated-input-container textarea {
-  padding-top: 1.75rem !important;
+  padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
 }
 

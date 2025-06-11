@@ -1,5 +1,6 @@
 {
-  "hello": "Olá",  "pages": {
+  "hello": "Olá",
+  "pages": {
     "index": {
       "title": "Bem-vindo ao spesami!",
       "description": "Esta é uma demonstração de um aplicativo React com i18n e TypeScript."
@@ -15,7 +16,9 @@
     "contact": "Contato",
     "blog": "Blog",
     "services": "Serviços"
-  },  "input": {
+  },
+  "input": {
+    "input": "Digite texto aqui",
     "name": "Digite seu nome",
     "surname": "Digite seu sobrenome",
     "email": "Digite seu email",
@@ -23,10 +26,12 @@
     "textbox": "Digite seu texto aqui...",
     "password": "Digite sua senha",
     "number": "Digite um número",
+    "text": "Digite texto aqui",
     "phone": "Telefone (XXX) XXX-XXXX",
     "fiscalCode": "Código Fiscal",
     "date": "Data (DD/MM/AAAA)",
-    "submit": "Enviar",    "errors": {
+    "submit": "Enviar",
+    "errors": {
       "required": "Este campo é obrigatório",
       "email": "Por favor digite um endereço de email válido",
       "minLength": "Mínimo {min} caracteres necessários",

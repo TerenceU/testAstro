@@ -1,5 +1,6 @@
 {
-    "hello": "Hello",    "pages": {
+    "hello": "Hello",
+    "pages": {
         "index": {
             "title": "Welcome to spesami!",
             "description": "This is a demo of a React app with i18n and TypeScript."
@@ -15,7 +16,9 @@
         "contact": "Contact",
         "blog": "Blog",
         "services": "Services"
-    },    "input": {
+    },
+    "input": {
+        "input": "Enter text here",
         "name": "Enter your name",
         "surname": "Enter your surname",
         "email": "Enter your email",
@@ -23,10 +26,12 @@
         "textbox": "Enter your text here...",
         "password": "Enter your password",
         "number": "Enter a number",
+        "text": "Enter text here",
         "phone": "Phone (XXX) XXX-XXXX",
         "fiscalCode": "Tax Code",
         "date": "Date (DD/MM/YYYY)",
-        "submit": "Submit",        "errors": {
+        "submit": "Submit",
+        "errors": {
             "required": "This field is required",
             "email": "Please enter a valid email address",
             "minLength": "Minimum {min} characters required",

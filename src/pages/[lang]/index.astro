@@ -1,6 +1,6 @@
 ---
 
-import BaseCard from '@/components/ui/BaseCard.astro';
+import BaseCard from '@/components/card/BaseCard.astro';
 import BaseButton from '../../components/buttons/BaseButton.astro';
 import BaseText from '../../components/text/BaseText.astro';
 import { TranslationService } from '../../i18n/utils';
@@ -89,6 +89,7 @@ const t = TranslationService.useTranslations(lang);
         <BaseDropdown 
             id="menu-fixed-width-dropdown" 
             placeholder="Menu larghezza fissa"
+            class="max-w-[300px]"
         >
             <button type="button" data-value="option1" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
                 <img src="https://flagsapi.com/IT/flat/32.png" alt="Italia" class="w-5 h-5 object-cover rounded" />
@@ -114,9 +115,13 @@ const t = TranslationService.useTranslations(lang);
 
             {t('pages.index.description')}
 
-            <BaseInput type="text" placeholder={t('input.name')} required>
+            <BaseInput type="text" label={t('input.name')} required>
             </BaseInput>
             
+            <BaseInput type="email" animatedLabel="true" required />
+            <BaseInput type="password" animatedLabel="true" required />
+            <BaseInput type="password" label={t('input.password')} required />
+
             
             <Fragment slot="footer">
                 <BaseButton type="button">
@@ -126,5 +131,6 @@ const t = TranslationService.useTranslations(lang);
             
         </BaseCard>
         
+        <BaseInput type=""
 
     </Layout>

@@ -37,19 +37,19 @@ props.type = props.type ?? 'text';
 // Set default placeholders based on input type
 switch (props.type) {
     case 'email':
-        props.placeholder = props.placeholder ?? 'Enter email here...';
+        props.placeholder = props.placeholder ?? t('input.email');
         break;
     case 'password':
-        props.placeholder = props.placeholder ?? 'Enter password here...';
+        props.placeholder = props.placeholder ?? t('input.password');
         break;
     case 'number': 
-        props.placeholder = props.placeholder ?? 'Enter number here...';
+        props.placeholder = props.placeholder ?? t('input.number');
         break;
     case 'text':
-        props.placeholder = props.placeholder ?? 'Enter text here...';
+        props.placeholder = props.placeholder ?? t('input.text');
         break;
     case 'textbox':
-        props.placeholder = props.placeholder ?? 'Enter your message here...';
+        props.placeholder = props.placeholder ?? t('input.textbox');
         break;
     default:
         break;
@@ -99,9 +99,9 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
 
 {isNumberInput ? (
   <div class="input-wrapper">
-    {animatedLabel && label && (
+    {animatedLabel && (
       <div class="animated-input-container">
-        <label for={inputId} class="animated-label">{label}</label>
+        <label for={inputId} class="animated-label">{props.placeholder}</label>
         <div class="custom-number-input">
           <input 
               id={inputId}
@@ -136,6 +136,7 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
       </div>
     ) || (
       <div class="custom-number-input">
+        {label && <label for={inputId} class="label">{label}</label>}
         <input 
             id={inputId}
             type={props.type}
@@ -178,9 +179,9 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
   </div>
 ) : isTextboxInput ? (
   <div class="input-wrapper">
-    {animatedLabel && label ? (
+    {animatedLabel ? (
       <div class="animated-input-container">
-        <label for={inputId} class="animated-label">{label}</label>
+        <label for={inputId} class="animated-label">{props.placeholder}</label>
         <textarea 
             id={inputId}
             class={props.class + ' min-h-[100px] resize-y'}
@@ -195,7 +196,8 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
         )}
       </div>
     ) : (
-      <>
+      <div class="input-wrapper">
+        {label && <label for={inputId} class="label">{label}</label>}
         <textarea 
             id={inputId}
             class={props.class + ' min-h-[100px] resize-y'}
@@ -208,7 +210,7 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
             <span id={`${inputId}-current`}>0</span>/<span id={`${inputId}-max`}>{maxLength}</span>
           </div>
         )}
-      </>
+      </div>
     )}
     {showErrors && (
       <div class="error-message" id={`${inputId}-error`} style="display: none;"></div>
@@ -216,9 +218,9 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
   </div>
 ) : (
   <div class="input-wrapper">
-    {animatedLabel && label ? (
+    {animatedLabel ? (
       <div class="animated-input-container">
-        <label for={inputId} class="animated-label">{label}</label>
+        <label for={inputId} class="animated-label">{props.placeholder}</label>
         <input 
             id={inputId}
             type={props.type}
@@ -228,17 +230,19 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
             {...validationData}
             {...props}
         />
+      </div>    ) : (
+      <div class="input-wrapper">
+        {label && <label for={inputId} class="label">{label}</label>}
+        <input 
+            id={inputId}
+            type={props.type}
+            class={props.class}
+            placeholder={props.placeholder}
+            value={props.value}
+            {...validationData}
+            {...props}
+        />
       </div>
-    ) : (
-      <input 
-          id={inputId}
-          type={props.type}
-          class={props.class}
-          placeholder={props.placeholder}
-          value={props.value}
-          {...validationData}
-          {...props}
-      />
     )}
     {showCounter && maxLength && (
       <div class="word-counter external" id={`${inputId}-counter`}>

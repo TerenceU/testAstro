@@ -18,6 +18,7 @@
         "services": "Servizi"
     },    
     "input": {
+        "text": "Inserisci testo qui",
         "name": "Inserisci il tuo nome",
         "surname": "Inserisci il tuo cognome",
         "email": "Inserisci la tua email",
