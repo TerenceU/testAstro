@@ -219,7 +219,6 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
 ) : (
   <div class="input-wrapper">
     {animatedLabel ? (
-      <div class="animated-input-container">
         <label for={inputId} class="animated-label">{props.placeholder}</label>
         <input 
             id={inputId}
@@ -229,10 +228,10 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
             value={props.value}
             {...validationData}
             {...props}
-        />
-      </div>    ) : (
-      <div class="input-wrapper">
+        />   ) : (
+        <>
         {label && <label for={inputId} class="label">{label}</label>}
+        </>
         <input 
             id={inputId}
             type={props.type}
@@ -242,7 +241,6 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
             {...validationData}
             {...props}
         />
-      </div>
     )}
     {showCounter && maxLength && (
       <div class="word-counter external" id={`${inputId}-counter`}>
@@ -437,12 +435,14 @@ document.addEventListener('DOMContentLoaded', function() {
       if (errorDiv) {
         errorDiv.style.display = 'none';
         errorDiv.textContent = '';
+        labelElement?.classList.remove('error');
       }
     } else {
       input.classList.add('input-error');
       if (errorDiv) {
         errorDiv.style.display = 'block';
         errorDiv.textContent = errorMessage;
+        labelElement.classList.add('error');
       }
     }
 

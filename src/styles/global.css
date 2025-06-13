@@ -166,6 +166,7 @@ input[type="number"]::-webkit-inner-spin-button {
   position: relative;
   width: 100%;
   transition: all 0.2s ease-in-out;
+  margin-bottom: 2rem;
 }
 
 .input-wrapper:hover {
@@ -185,12 +186,14 @@ input[type="number"]::-webkit-inner-spin-button {
   padding-left: 0.5rem;
   display: block;
   animation: slideDown 0.2s ease-out;
+  position: absolute;
+  bottom: -20px;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
@@ -214,10 +217,6 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 /* Word Counter Styles */
-.input-wrapper {
-  position: relative;
-}
-
 .word-counter {
   font-size: 0.75rem;
   color: var(--color-text-secondary);
@@ -276,6 +275,8 @@ input[type="number"]::-webkit-inner-spin-button {
 .word-counter.external {
   margin-top: 0.25rem;
   padding-right: 0.5rem;
+  position: absolute;
+  right: 0;
 }
 
 .word-counter.warning {
@@ -377,9 +378,6 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 /* Demo page styling */
-.input-wrapper {
-  margin-bottom: 1.5rem;
-}
 
 h2 {
   margin-top: 2rem;

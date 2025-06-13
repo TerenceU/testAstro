@@ -118,7 +118,7 @@ const t = TranslationService.useTranslations(lang);
             <BaseInput type="text" label={t('input.name')} required>
             </BaseInput>
             
-            <BaseInput type="email" animatedLabel="true" required />
+            <BaseInput type="email" animatedLabel="true" />
             <BaseInput type="password" animatedLabel="true" required />
             <BaseInput type="password" label={t('input.password')} required />
 
@@ -131,6 +131,6 @@ const t = TranslationService.useTranslations(lang);
             
         </BaseCard>
         
-        <BaseInput type=""
+        <BaseInput type="text" placeholder={t('input.placeholder')} required minLength={2} maxLength={50} showCounter animatedLabel label={t('input.name')} />
 
     </Layout>
