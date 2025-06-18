@@ -35,10 +35,10 @@
       "required": "Dieses Feld ist erforderlich",
       "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
       "minLength": "Mindestens {min} Zeichen erforderlich",
-      "maxLength": "Maximal {max} Zeichen erlaubt",
-      "min": "Der Wert muss mindestens {min} sein",
+      "maxLength": "Maximal {max} Zeichen erlaubt",      "min": "Der Wert muss mindestens {min} sein",
       "max": "Der Wert darf {max} nicht überschreiten",
-      "pattern": "Das eingegebene Format ist nicht gültig"
+      "pattern": "Das eingegebene Format ist nicht gültig",
+      "notEqual": "Dieses Feld muss mit dem anderen Feld übereinstimmen"
     },
     "counter": {
       "characters": "Zeichen",

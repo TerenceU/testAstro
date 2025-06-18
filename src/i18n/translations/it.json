@@ -29,15 +29,15 @@
         "phone": "Telefono (XXX) XXX-XXXX",
         "fiscalCode": "Codice Fiscale",
         "date": "Data (DD/MM/YYYY)",
-        "submit": "Invia",        
-        "errors": {
+        "submit": "Invia",          "errors": {
             "required": "Questo campo è obbligatorio",
             "email": "Inserisci un indirizzo email valido",
             "minLength": "Minimo {min} caratteri richiesti",
             "maxLength": "Massimo {max} caratteri consentiti",
             "min": "Il valore deve essere almeno {min}",
             "max": "Il valore non può superare {max}",
-            "pattern": "Il formato inserito non è valido"
+            "pattern": "Il formato inserito non è valido",
+            "notEqual": "Questo campo deve corrispondere all'altro campo"
         },
         "counter": {
             "characters": "caratteri",

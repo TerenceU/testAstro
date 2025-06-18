@@ -144,8 +144,8 @@ const t = TranslationService.useTranslations(lang);
             </Fragment>
             <BaseInput type="text" label={t('input.name')} animatedLabel={true} required />
             <BaseInput type="email" animatedLabel={true} />
-            <BaseInput type="password" animatedLabel={true} required />
-            <BaseInput type="password" label={t('input.password')} animatedLabel={true} required />
+            <BaseInput type="password" animatedLabel={true} required name="main-pass"/>
+            <BaseInput type="password" label={t('input.password')} animatedLabel={true} required isEqualTo='main-pass'/>
             <Fragment slot="form-footer">
                 <BaseButton type="submit">
                     {t('form.submit')}

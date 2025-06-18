@@ -7,7 +7,7 @@ const { isSkeleton = false, ...props } = Astro.props as Record<string, any>;
 // Set default attributes for the button if not provided
 const defaultAttributes = {
   type: 'button',
-  class: 'text-base leading-normal bg-button-background py-2.5 px-4 tracking-wide border border-dropdown-border rounded-xl font-default transition-all duration-200 hover:bg-button-hover-background hover:shadow-lg hover:shadow-border/50 focus:ring-2 focus:ring-focus',
+  class: 'text-button-text-color leading-normal bg-button-background py-2.5 px-4 tracking-wide border border-dropdown-border rounded-xl font-default transition-all duration-200 hover:bg-button-hover-background hover:shadow-lg hover:shadow-border/50 focus:ring-2 focus:ring-focus',
 };
 
 props.type = props.type ?? defaultAttributes.type;

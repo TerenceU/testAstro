@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-    --color-first: #feaa88;
+    --color-first: #2db2c1;
     --color-second: #b3cab6;
-    --color-third: #e2d7e5; 
+    --color-third: #fff8e7; 
     --color-fourth: #fff6ef;
-    --color-background: #faeeee;
+    --color-background: #ffc52f;
     --color-accent: #f0e68c;
-    --color-text:   #5d5470;
-    --color-border:#859688;
+    --color-text:   #09345f;
+    --color-border:#2db2c1;
     --color-error: #ff6347;
     --color-success:#98fb98;
-    --color-focus: #ffab89;
+    --color-focus: #21828e;
 
     /* Font */
     --font-default: 'Quicksand', sans-serif;
@@ -23,12 +23,12 @@
     /* Button */
     --color-button-background: var(--color-first);
     --color-button-background-secondary: var(--color-second);
-    --color-button-text-color: var(--color-text);
+    --color-button-text-color: var(--color-third);
     --color-button-hover-background: var(--color-first);
     --color-button-hover-text-color: var(--color-text);
 
     /* Input */
-    --color-input-background: var(--color-background);
+    --color-input-background: var(--color-third);
     --color-input-text: var(--color-text);
     --color-input-border: var(--color-border);
     --color-input-focus-border: var(--color-focus);
@@ -36,7 +36,7 @@
     --color-input-error-border: var(--color-error);
 
     /* Dropdown */
-    --color-dropdown-background: var(--color-background);
+    --color-dropdown-background: var(--color-third);
     --color-dropdown-text: var(--color-text);
     --color-dropdown-border: var(--color-border);
 

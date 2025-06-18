@@ -7,7 +7,6 @@
  * @property {string} placeholder
  */
 
-
  interface Props {
   required?: boolean;
   min?: number;
@@ -16,6 +15,7 @@
   maxLength?: number;
   pattern?: string;
   mask?: string;
+  isEqualTo?: string;
   showErrors?: boolean;
   errorMessage?: string;
   showCounter?: boolean;
@@ -38,6 +38,7 @@ const {
   maxLength,
   pattern,
   mask,
+  isEqualTo,
   // Error handling
   showErrors = true,
   errorMessage,
@@ -121,6 +122,7 @@ const validationData = {
   'data-validation-max-length': maxLength,
   'data-validation-pattern': pattern,
   'data-validation-mask': mask,
+  'data-validation-equal-to': isEqualTo,
   'data-validation-lang': lang
 };
 
@@ -296,6 +298,7 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
   min: t('input.errors.min'),
   max: t('input.errors.max'),
   pattern: t('input.errors.pattern'),
+  notEqual: t('input.errors.notEqual'),
   characters: t('input.counter.characters'),
   remaining: t('input.counter.remaining')
 } }}>
@@ -406,7 +409,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     return maskedValue;
   }
-
   // Validation function
   function validateInput() {
     const value = input.value;
@@ -417,6 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const minLength = input.getAttribute('data-validation-min-length');
     const maxLength = input.getAttribute('data-validation-max-length');
     const pattern = input.getAttribute('data-validation-pattern');
+    const equalTo = input.getAttribute('data-validation-equal-to');
     
     let isValid = true;
     let errorMessage = '';
@@ -471,6 +474,15 @@ document.addEventListener('DOMContentLoaded', function() {
           errorMessage = t.pattern;
         }
       }
+      
+      // Equal to validation
+      if (equalTo) {
+        const compareField = document.getElementById(equalTo) || document.querySelector(`[name="${equalTo}"]`);
+        if (compareField && value !== compareField.value) {
+          isValid = false;
+          errorMessage = t.notEqual;
+        }
+      }
     }
 
     // Update UI based on validation
@@ -492,7 +504,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     return isValid;
   }
-
   // Apply mask on input
   if (input.getAttribute('data-validation-mask')) {
 
@@ -536,6 +547,21 @@ document.addEventListener('DOMContentLoaded', function() {
       updateCharacterCounter();
     });
     input.addEventListener('blur', () => { validateInput(); input.value ? "" : labelElement?.classList.remove('error'); });
+  }
+
+  // Setup cross-validation for isEqualTo
+  const equalTo = input.getAttribute('data-validation-equal-to');
+  if (equalTo) {
+    const compareField = document.getElementById(equalTo) || document.querySelector(`[name="${equalTo}"]`);
+    if (compareField) {
+      // Add listener to compare field to re-validate this field when it changes
+      compareField.addEventListener('input', () => {
+        validateInput();
+      });
+      compareField.addEventListener('blur', () => {
+        validateInput();
+      });
+    }
   }
 
   // Initialize character counter on page load

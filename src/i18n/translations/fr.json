@@ -38,7 +38,8 @@
       "maxLength": "Maximum {max} caractères autorisés",
       "min": "La valeur doit être au moins {min}",
       "max": "La valeur ne peut pas dépasser {max}",
-      "pattern": "Le format saisi n'est pas valide"
+      "pattern": "Le format saisi n'est pas valide",
+      "notEqual": "Ce champ doit correspondre à l'autre champ"
     },
     "counter": {
       "characters": "caractères",
