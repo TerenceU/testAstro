@@ -1,0 +1,30 @@
+---
+import BaseButton from "../buttons/BaseButton.astro";
+import { TranslationService } from "../../i18n/utils";
+const { lang } = Astro.params;
+const t = TranslationService.useTranslations(lang);
+
+interface Props {
+    method: 'post' | 'get' | 'put' | 'delete'; // HTTP method for the form
+    action: string; // URL to submit the form to
+    [key: string]: any; // Allow other attributes to be passed
+}
+
+const {
+    method = 'post', // Default method is 'post'
+    ...props    
+} = Astro.props;
+
+---
+
+<form {...props} hx-{method}="{action}">
+    <slot name="form-header"></slot>
+    <div class="grid grid-cols-4 gap-4">
+        <slot></slot>
+    </div>
+    <slot name="form-footer">
+        <BaseButton type="submit" class="w-full">
+            {t('form.submit')}
+        </BaseButton>
+    </slot>
+</form>

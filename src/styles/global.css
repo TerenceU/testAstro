@@ -324,6 +324,8 @@ input[type="number"]::-webkit-inner-spin-button {
   z-index: 5;
   font-family: var(--font-default);
   will-change: transform, color, font-size;
+  border: none;
+  border-radius: 10px;
 }
 
 /* Special positioning for textareas */
@@ -338,36 +340,58 @@ input[type="number"]::-webkit-inner-spin-button {
   top: 0;
   transform: translateY(-50%);
   font-size: 0.75rem;
-  color: var(--color-focus, #3b82f6);
+  color: var(--color-text, #5d5470);
+  border: var(--color-text, #5d5470) solid 1px;
   font-weight: 500;
 }
 
-/* Active state - when input has value or is focused */
+/* Special focus state for textareas when focused */
+.animated-input-container:has(textarea:focus) .animated-label {
+  color: var(--color-focus, #3b82f6);
+  border: var(--color-input-focus-border, #3b82f6) solid 1px;
+}
+
+/* Active state - when input has value but not focused */
 .animated-label.active {
   top: 0;
   transform: translateY(-50%);
   font-size: 0.75rem;
-  color: var(--color-focus, #3b82f6);
+  color: var(--color-text, #5d5470);
+  border: var(--color-text, #3b82f6) solid 1px;
   font-weight: 500;
 }
 
 /* Error state for animated labels */
 .animated-label.error {
   color: var(--color-error, #ef4444);
+  border: var(--color-input-error-border, #ef4444) solid 1px;
 }
 
 /* Focus state */
-.animated-input-container:focus-within {
+.animated-input-container:focus-within,
+.animated-input-container.is-focused {
   transform: translateY(-1px);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
-.animated-input-container:focus-within .animated-label {
+.animated-input-container:focus-within .animated-label,
+.animated-input-container.is-focused .animated-label {
   top: 0;
   transform: translateY(-50%);
-  font-size: 0.75rem;
-  color: var(--color-focus, #3b82f6);
+  font-size: 0.75rem;  color: var(--color-focus, #3b82f6) !important;
+  border: solid 2px;
   font-weight: 500;
+  border-color: gradient(to right, transparent, var(--color-input-focus-border, #3b82f6));
+  
+}
+
+
+/* Error state overrides focus - must come after focus rules */
+.animated-input-container:focus-within .animated-label.error,
+.animated-input-container.is-focused .animated-label.error,
+.animated-label.error {
+  color: var(--color-error, #ef4444) !important;
+  border: var(--color-error, #ef4444) solid 2px !important;
 }
 
 /* Dark mode support for animated labels */

@@ -8,6 +8,7 @@ import Layout from '../../layout/layout.astro';
 import BaseInput from '@/components/inputs/BaseInput.astro';
 import BaseDropdown from '@/components/dropdown/BaseDropdown.astro';
 import TranslateDropdown from '@/components/dropdown/TranslateDropdown.astro';
+import BaseForm from '@/components/form/BaseForm.astro';
 
 // Genera anche la home statica per ogni lingua
 export function getStaticPaths() {
@@ -118,8 +119,8 @@ const t = TranslationService.useTranslations(lang);
             <BaseInput type="text" label={t('input.name')} required>
             </BaseInput>
             
-            <BaseInput type="email" animatedLabel="true" />
-            <BaseInput type="password" animatedLabel="true" required />
+            <BaseInput type="email" animatedLabel={true} />
+            <BaseInput type="password" animatedLabel={true} required />
             <BaseInput type="password" label={t('input.password')} required />
 
             
@@ -132,5 +133,24 @@ const t = TranslationService.useTranslations(lang);
         </BaseCard>
         
         <BaseInput type="text" placeholder={t('input.placeholder')} required minLength={2} maxLength={50} showCounter animatedLabel label={t('input.name')} />
+
+        <BaseInput type="text" placeholder={t('input.placeholder')} required minLength={2} maxLength={500} showCounter animatedLabel label={t('input.description')} />  
+
+        <BaseForm method='post' action="/api/user">
+            <Fragment slot="form-header">
+                <BaseText Type="h2">
+                    {t('form.title')}
+                </BaseText>
+            </Fragment>
+            <BaseInput type="text" label={t('input.name')} animatedLabel={true} required />
+            <BaseInput type="email" animatedLabel={true} />
+            <BaseInput type="password" animatedLabel={true} required />
+            <BaseInput type="password" label={t('input.password')} animatedLabel={true} required />
+            <Fragment slot="form-footer">
+                <BaseButton type="submit">
+                    {t('form.submit')}
+                </BaseButton>
+            </Fragment>
+        </BaseForm>
 
     </Layout>

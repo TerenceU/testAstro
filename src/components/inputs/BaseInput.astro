@@ -1,4 +1,33 @@
 ---
+
+/**
+ * @typedef {Object} Props
+ * @property {'text'|'email'|'password'} type
+ * @property {boolean} required
+ * @property {string} placeholder
+ */
+
+
+ interface Props {
+  required?: boolean;
+  min?: number;
+  max?: number;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  mask?: string;
+  showErrors?: boolean;
+  errorMessage?: string;
+  showCounter?: boolean;
+  animatedLabel?: boolean;
+  label?: string;
+  value?: string;
+  disabled?: boolean;
+  class?: string;
+  error?: boolean;
+  [key: string]: any; // Allow other props
+}
+
 export const prerender = false;
 const { 
   // Validation props
@@ -53,6 +82,10 @@ switch (props.type) {
         break;
     default:
         break;
+}
+
+if(required) {
+  props.placeholder += " *";
 }
 
 // Handle error states
@@ -216,9 +249,9 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
       <div class="error-message" id={`${inputId}-error`} style="display: none;"></div>
     )}
   </div>
-) : (
-  <div class="input-wrapper">
+) : (  <div class="input-wrapper">
     {animatedLabel ? (
+      <div class="animated-input-container">
         <label for={inputId} class="animated-label">{props.placeholder}</label>
         <input 
             id={inputId}
@@ -228,10 +261,11 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
             value={props.value}
             {...validationData}
             {...props}
-        />   ) : (
+        />
+      </div>
+    ) : (
         <>
-        {label && <label for={inputId} class="label">{label}</label>}
-        </>
+        {label && <label for={inputId} class="label">{label} {required ? " *":""}</label>}
         <input 
             id={inputId}
             type={props.type}
@@ -241,6 +275,7 @@ function formatErrorMessage(message: string, params: Record<string, any>): strin
             {...validationData}
             {...props}
         />
+        </>
     )}
     {showCounter && maxLength && (
       <div class="word-counter external" id={`${inputId}-counter`}>
@@ -274,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const labelElement = input && animatedLabel ? input.parentElement.querySelector('.animated-label') : null;
   
   if (!input) return;
-
   // Animated label functionality
   function updateLabelState() {
     if (labelElement && animatedLabel) {
@@ -285,6 +319,16 @@ document.addEventListener('DOMContentLoaded', function() {
         labelElement.classList.add('active');
       } else {
         labelElement.classList.remove('active');
+      }
+      
+      // Add/remove focus class for styling
+      const container = input.closest('.animated-input-container');
+      if (container) {
+        if (isFocused) {
+          container.classList.add('is-focused');
+        } else {
+          container.classList.remove('is-focused');
+        }
       }
     }
   }
@@ -451,6 +495,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Apply mask on input
   if (input.getAttribute('data-validation-mask')) {
+
+    input.addEventListener('focus', () => {
+      setTimeout(() => {
+        validateInput();
+        updateCharacterCounter();
+      }, 0);
+    });
+
     input.addEventListener('input', function(e) {
       const mask = input.getAttribute('data-validation-mask');
       const cursorPosition = input.selectionStart;
@@ -470,12 +522,20 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 0);
     });
   } else {
+    
+    input.addEventListener('focus', () => {
+      setTimeout(() => {
+        validateInput();
+        updateCharacterCounter();
+      }, 0);
+    });
+
     // Regular validation
     input.addEventListener('input', () => {
       validateInput();
       updateCharacterCounter();
     });
-    input.addEventListener('blur', validateInput);
+    input.addEventListener('blur', () => { validateInput(); input.value ? "" : labelElement?.classList.remove('error'); });
   }
 
   // Initialize character counter on page load
