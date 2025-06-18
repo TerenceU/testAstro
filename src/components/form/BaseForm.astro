@@ -7,17 +7,22 @@ const t = TranslationService.useTranslations(lang);
 interface Props {
     method: 'post' | 'get' | 'put' | 'delete'; // HTTP method for the form
     action: string; // URL to submit the form to
+    novalidate?: boolean; // Disable native browser validation
     [key: string]: any; // Allow other attributes to be passed
 }
 
 const {
     method = 'post', // Default method is 'post'
+    novalidate = true, // Default to true to use custom validation
     ...props    
 } = Astro.props;
 
+// Generate unique ID for the form
+const formId = `form-${Math.random().toString(36).substr(2, 9)}`;
+
 ---
 
-<form {...props} hx-{method}="{action}">
+<form id={formId} {...props} hx-{method}="{action}" novalidate={novalidate}>
     <slot name="form-header"></slot>
     <div class="grid grid-cols-4 gap-4">
         <slot></slot>
@@ -28,3 +33,48 @@ const {
         </BaseButton>
     </slot>
 </form>
+
+<script define:vars={{ formId }}>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    // Custom form validation before submit
+    form.addEventListener('submit', function(e) {
+        const inputs = form.querySelectorAll('input[data-validation-required], input[data-validation-type], textarea[data-validation-required], textarea[data-validation-type]');
+        let isFormValid = true;
+        let firstInvalidInput = null;
+
+        // Validate all inputs
+        inputs.forEach(input => {
+            // Trigger validation on each input
+            const event = new Event('blur');
+            input.dispatchEvent(event);
+            
+            // Check if input has error class or error message visible
+            const hasError = input.classList.contains('input-error') || 
+                           input.classList.contains('!border-input-error-border');
+            const errorDiv = document.getElementById(`${input.id}-error`);
+            const hasErrorMessage = errorDiv && errorDiv.style.display !== 'none' && errorDiv.textContent;
+            
+            if (hasError || hasErrorMessage) {
+                isFormValid = false;
+                if (!firstInvalidInput) {
+                    firstInvalidInput = input;
+                }
+            }
+        });
+
+        // If form is invalid, prevent submission and focus first invalid input
+        if (!isFormValid) {
+            e.preventDefault();
+            if (firstInvalidInput) {
+                firstInvalidInput.focus();
+                firstInvalidInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return false;
+        }
+    });
+});
+</script>
+
