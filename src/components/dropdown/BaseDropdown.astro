@@ -33,30 +33,512 @@ const {
 const dropdownId = id || `dropdown-${Math.random().toString(36).substr(2, 9)}`;
 
 // Prendere il contenuto dello slot se esiste
-const slotContent = Astro.slots.content || Astro.slots.default;
+const slotContent = await Astro.slots.render('default');
 
-//   - Gestire la disabilitazione del dropdown se richiesto
-//   - Gestire la disabilitazione di alcune opzioni se richiesto
+// Interfaccia per le opzioni del dropdown
+interface DropdownOption {
+  value: string;
+  label: string;
+  href: string | null;
+  image: {
+    src: string;
+    alt: string;
+  } | null;
+  disabled: boolean;
+}
 
+// Processare il contenuto dello slot per creare le opzioni
+let options: DropdownOption[] = [];
 
-// Normalizzare il contenuto dello slot che può essere un elenco di strighe una sotto l'altra 
-// (es. <BaseDropdown>
-// Opzione 1
-// Opzione 2
-// </BaseDropdown>), 
-// un elenco di img, 
-// un elenco di bottoni,
-// un elenco di qualsiasi altro tag HTML che verrò quindi trasformato in bottoni,
-// se all'interno dello slot c'è un tag qualsiasi ma dentro a quel tag c'è una immagine allora prendere anche l'immagine
-// o una qualsiasi combinazione di questi elementi  
-// se qualsiasi elemento ha un attributo href allora il bottone deve permettere di navigare a quella pagina,
-// il valore dell'opzione se non specificato tramite data-value sarà il testo del bottone,
-// nel caso di immagini, il valore sarà l'attributo alt dell'immagine o il nome del file se non specificato,
-// in un array di bottoni
+if (slotContent) {
+  // Utilizzare regex per estrarre le informazioni dalle opzioni
+  // Gestire prima gli elementi HTML con tag
+  const htmlElementRegex = /<(\w+)([^>]*)>(.*?)<\/\1>/gs;
+  const selfClosingTagRegex = /<(\w+)([^>]*)\s*\/>/g;
+  
+  let processedContent = slotContent;
+  let match;
+  
+  // Processare elementi HTML con tag di chiusura
+  while ((match = htmlElementRegex.exec(slotContent)) !== null) {
+    const [fullMatch, tagName, attributes, content] = match;
+    
+    // Estrarre attributi
+    const dataValue = attributes.match(/data-value=["']([^"']*)["']/)?.[1];
+    const href = attributes.match(/href=["']([^"']*)["']/)?.[1];
+    const disabled = attributes.includes('disabled') || attributes.includes('aria-disabled="true"');
+    
+    // Cercare immagini nel contenuto
+    const imgMatch = content.match(/<img[^>]*src=["']([^"']*)["'][^>]*(?:alt=["']([^"']*)["'])?[^>]*>/);
+    const imgSrc = imgMatch?.[1];
+    const imgAlt = imgMatch?.[2];
+    
+    // Estrarre il testo pulito (rimuovere tag HTML)
+    const textContent = content.replace(/<[^>]*>/g, '').trim();
+    
+    const value = dataValue || 
+                  (imgAlt || (imgSrc ? imgSrc.split('/').pop()?.split('.')[0] : null)) ||
+                  textContent || 
+                  ``;
+    
+    options.push({
+      value,
+      label: textContent || imgAlt || ``,
+      href: href || null,
+      image: imgSrc ? {
+        src: imgSrc,
+        alt: imgAlt || ''
+      } : null,
+      disabled
+    });
+    
+    // Rimuovere l'elemento processato dal contenuto
+    processedContent = processedContent.replace(fullMatch, '');
+  }
+  
+  // Processare elementi self-closing (come img)
+  while ((match = selfClosingTagRegex.exec(slotContent)) !== null) {
+    const [fullMatch, tagName, attributes] = match;
+    
+    if (tagName.toLowerCase() === 'img') {
+      const src = attributes.match(/src=["']([^"']*)["']/)?.[1];
+      const alt = attributes.match(/alt=["']([^"']*)["']/)?.[1];
+      const dataValue = attributes.match(/data-value=["']([^"']*)["']/)?.[1];
+      
+      if (src) {
+        const value = dataValue || alt || src.split('/').pop()?.split('.')[0] || ``;
+        
+        options.push({
+          value,
+          label: alt || value,
+          href: null,
+          image: {
+            src,
+            alt: alt || ''
+          },
+          disabled: false
+        });
+        
+        processedContent = processedContent.replace(fullMatch, '');
+      }
+    }
+  }
+  
+  // Processare le righe di testo rimanenti
+  const remainingLines = processedContent
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line && !line.match(/<[^>]*>/) && line.length > 0);
+  
+  remainingLines.forEach(line => {
+    if (line.trim()) {
+      options.push({
+        value: line.trim(),
+        label: line.trim(),
+        href: null,
+        image: null,
+        disabled: false
+      });
+    }
+  });
+}
+
+// Se non ci sono opzioni nello slot, creare un'opzione di default
+if (options.length === 0) {
+  options = [{
+    value: '',
+    label: 'Nessuna opzione disponibile',
+    href: null,
+    image: null,
+    disabled: true
+  }];
+}
 
 ---
 
 <!-- Render il dropdown con le opzioni -->
+<div 
+  class={`dropdown-container relative ${fullWidth ? 'w-full' : 'inline-block'} ${className}`}
+  data-dropdown-id={dropdownId}
+>
+  <!-- Trigger Button -->
+  <BaseButton
+    id={`${dropdownId}-trigger`}
+    type="button"
+    class={`dropdown-trigger flex items-center justify-between gap-2 ${fullWidth ? 'w-full' : ''} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+    disabled={disabled}
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-label={placeholder}
+  >
+    <span class="dropdown-value truncate">{value || placeholder}</span>
+    <svg 
+      class="dropdown-arrow w-4 h-4 transition-transform duration-200" 
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </BaseButton>
+
+  <!-- Hidden Input for Form Submission -->
+  {name && (
+    <input 
+      type="hidden" 
+      name={name} 
+      value={value || ''} 
+      required={required}
+    />
+  )}
+
+  <!-- Dropdown Menu -->
+  <div 
+    class="dropdown-menu absolute top-full left-0 mt-1 bg-white border border-dropdown-border rounded-xl shadow-lg z-50 min-w-full max-h-60 overflow-y-auto hidden"
+    role="listbox"
+    aria-labelledby={`${dropdownId}-trigger`}
+  >
+    {options.map((option, index) => (
+      <button
+        type="button"
+        class={`dropdown-option w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center gap-3 transition-colors duration-150 ${
+          option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+        } ${index === 0 ? 'rounded-t-xl' : ''} ${index === options.length - 1 ? 'rounded-b-xl' : ''}`}
+        data-value={option.value}
+        data-href={option.href}
+        disabled={option.disabled}
+        role="option"
+        aria-selected="false"
+      >
+        {option.image && (
+          <img 
+            src={option.image.src} 
+            alt={option.image.alt || option.label}
+            class="w-6 h-6 rounded object-cover flex-shrink-0"
+          />
+        )}
+        <span class="truncate">{option.label}</span>
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  class BaseDropdown {
+    private container: HTMLElement;
+    private trigger: HTMLButtonElement;
+    private menu: HTMLElement;
+    private hiddenInput: HTMLInputElement | null;
+    private options: NodeListOf<HTMLButtonElement>;
+    private isOpen: boolean = false;
+    private selectedValue: string = '';
+
+    constructor(container: HTMLElement) {
+      this.container = container;
+      this.trigger = container.querySelector('.dropdown-trigger') as HTMLButtonElement;
+      this.menu = container.querySelector('.dropdown-menu') as HTMLElement;
+      this.hiddenInput = container.querySelector('input[type="hidden"]') as HTMLInputElement;
+      this.options = container.querySelectorAll('.dropdown-option');
+
+      this.init();
+    }
+
+    private init(): void {
+      // Event listeners
+      this.trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggle();
+      });
+
+      this.options.forEach(option => {
+        option.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.selectOption(option);
+        });
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!this.container.contains(e.target as Node)) {
+          this.close();
+        }
+      });
+
+      // Close on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen) {
+          this.close();
+          this.trigger.focus();
+        }
+      });
+
+      // Handle keyboard navigation
+      this.container.addEventListener('keydown', (e) => {
+        this.handleKeyboard(e);
+      });
+
+      // Position menu to avoid screen edges
+      this.trigger.addEventListener('click', () => {
+        this.positionMenu();
+      });
+
+      // Set initial value if provided
+      const initialValue = this.hiddenInput?.value || this.trigger.getAttribute('data-initial-value');
+      if (initialValue) {
+        this.setValueByData(initialValue);
+      }
+    }
+
+    private toggle(): void {
+      if (this.trigger.disabled) return;
+      
+      if (this.isOpen) {
+        this.close();
+      } else {
+        this.open();
+      }
+    }
+
+    private open(): void {
+      this.isOpen = true;
+      this.menu.classList.remove('hidden');
+      this.trigger.setAttribute('aria-expanded', 'true');
+      this.trigger.querySelector('.dropdown-arrow')?.classList.add('rotate-180');
+      
+      // Focus first non-disabled option
+      const firstOption = Array.from(this.options).find(option => !option.disabled);
+      firstOption?.focus();
+
+      this.positionMenu();
+    }
+
+    private close(): void {
+      this.isOpen = false;
+      this.menu.classList.add('hidden');
+      this.trigger.setAttribute('aria-expanded', 'false');
+      this.trigger.querySelector('.dropdown-arrow')?.classList.remove('rotate-180');
+    }
+
+    private selectOption(option: HTMLButtonElement): void {
+      if (option.disabled) return;
+
+      const value = option.getAttribute('data-value') || '';
+      const href = option.getAttribute('data-href');
+      const label = option.textContent?.trim() || '';
+
+      this.selectedValue = value;
+      
+      // Update UI
+      const valueSpan = this.trigger.querySelector('.dropdown-value');
+      if (valueSpan) {
+        valueSpan.textContent = label;
+      }
+
+      // Update hidden input
+      if (this.hiddenInput) {
+        this.hiddenInput.value = value;
+        
+        // Trigger change event for form validation
+        this.hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
+      // Update aria-selected
+      this.options.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+      option.setAttribute('aria-selected', 'true');
+
+      this.close();
+
+      // Navigate if href is provided
+      if (href) {
+        window.location.href = href;
+      }
+
+      // Validate if required
+      this.validate();
+    }
+
+    private setValueByData(value: string): void {
+      const option = Array.from(this.options).find(opt => 
+        opt.getAttribute('data-value') === value
+      );
+      
+      if (option) {
+        this.selectOption(option);
+      }
+    }
+
+    private positionMenu(): void {
+      if (!this.isOpen) return;
+
+      const rect = this.trigger.getBoundingClientRect();
+      const menuRect = this.menu.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+
+      // Reset positioning
+      this.menu.style.top = '';
+      this.menu.style.bottom = '';
+      this.menu.style.left = '';
+      this.menu.style.right = '';
+      this.menu.style.maxWidth = '';
+
+      // Check if menu would overflow bottom of screen
+      if (rect.bottom + menuRect.height > viewportHeight - 10) {
+        // Position above the trigger
+        this.menu.style.bottom = '100%';
+        this.menu.style.top = 'auto';
+        this.menu.style.marginBottom = '4px';
+        this.menu.style.marginTop = '0';
+      }
+
+      // Check if menu would overflow right of screen
+      if (rect.left + menuRect.width > viewportWidth - 10) {
+        this.menu.style.right = '0';
+        this.menu.style.left = 'auto';
+      }
+
+      // Set max width to prevent overflow
+      const maxWidth = Math.min(menuRect.width, viewportWidth - rect.left - 20);
+      this.menu.style.maxWidth = `${maxWidth}px`;
+    }
+
+    private handleKeyboard(e: KeyboardEvent): void {
+      if (!this.isOpen) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this.open();
+        }
+        return;
+      }
+
+      const activeElement = document.activeElement as HTMLButtonElement;
+      const currentIndex = Array.from(this.options).indexOf(activeElement);
+
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          this.focusNextOption(currentIndex);
+          break;
+        case 'ArrowUp':
+          e.preventDefault();
+          this.focusPreviousOption(currentIndex);
+          break;        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          if (activeElement && Array.from(this.options).indexOf(activeElement) !== -1) {
+            this.selectOption(activeElement);
+          }
+          break;
+        case 'Home':
+          e.preventDefault();
+          this.focusFirstOption();
+          break;
+        case 'End':
+          e.preventDefault();
+          this.focusLastOption();
+          break;
+      }
+    }
+
+    private focusNextOption(currentIndex: number): void {
+      const nextIndex = currentIndex + 1;
+      for (let i = nextIndex; i < this.options.length; i++) {
+        if (!this.options[i].disabled) {
+          this.options[i].focus();
+          return;
+        }
+      }
+      // Wrap to first option
+      this.focusFirstOption();
+    }
+
+    private focusPreviousOption(currentIndex: number): void {
+      const prevIndex = currentIndex - 1;
+      for (let i = prevIndex; i >= 0; i--) {
+        if (!this.options[i].disabled) {
+          this.options[i].focus();
+          return;
+        }
+      }
+      // Wrap to last option
+      this.focusLastOption();
+    }
+
+    private focusFirstOption(): void {
+      const firstOption = Array.from(this.options).find(option => !option.disabled);
+      firstOption?.focus();
+    }
+
+    private focusLastOption(): void {
+      const lastOption = Array.from(this.options).reverse().find(option => !option.disabled);
+      lastOption?.focus();
+    }
+
+    private validate(): void {
+      if (!this.hiddenInput) return;
+
+      const isRequired = this.hiddenInput.hasAttribute('required');
+      const hasValue = this.selectedValue && this.selectedValue.trim() !== '';
+
+      if (isRequired && !hasValue) {
+        this.hiddenInput.setCustomValidity('Questo campo è obbligatorio');
+        this.trigger.setAttribute('aria-invalid', 'true');
+        this.trigger.classList.add('border-red-500');
+      } else {
+        this.hiddenInput.setCustomValidity('');
+        this.trigger.setAttribute('aria-invalid', 'false');
+        this.trigger.classList.remove('border-red-500');
+      }
+    }
+
+    // Public methods
+    public getValue(): string {
+      return this.selectedValue;
+    }
+
+    public setValue(value: string): void {
+      this.setValueByData(value);
+    }
+
+    public disable(): void {
+      this.trigger.disabled = true;
+      this.trigger.classList.add('cursor-not-allowed', 'opacity-50');
+    }
+
+    public enable(): void {
+      this.trigger.disabled = false;
+      this.trigger.classList.remove('cursor-not-allowed', 'opacity-50');
+    }
+  }
+
+  // Initialize all dropdowns on the page
+  document.addEventListener('DOMContentLoaded', () => {
+    const dropdowns = document.querySelectorAll('.dropdown-container');
+    dropdowns.forEach(dropdown => {
+      new BaseDropdown(dropdown as HTMLElement);
+    });
+  });
+
+  // Also initialize dropdowns that might be added dynamically
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as Element;
+          const dropdowns = element.querySelectorAll('.dropdown-container:not([data-initialized])');
+          dropdowns.forEach(dropdown => {
+            dropdown.setAttribute('data-initialized', 'true');
+            new BaseDropdown(dropdown as HTMLElement);
+          });
+        }
+      });
+    });
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+</script>
 
 <!--
   Aggiungere una parte di script per gestire il dropdown:

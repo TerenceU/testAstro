@@ -22,9 +22,6 @@ const currentFlag = currentLang ? `https://flagsapi.com/${currentLang.params.fla
 <BaseDropdown 
     id="lang-dropdown-slot" 
     value={currentPath} 
-    options={languageOptions}
-    customDropdown={true}
-    selectedLayout="slot"
     {...props}
 >
   <!-- Slot personalizzato per la selezione -->

@@ -12,13 +12,14 @@ const languages = TranslationService.languagesArray;
     {...props}
   >
   {languages.map(langObj => (
-    <div data-value={`/${langObj.params.lang}/`}>
+    <a href={`/${langObj.params.lang}/`}>
       <img 
         src={`https://flagsapi.com/${langObj.params.flag.toUpperCase()}/flat/32.png`}
         alt={langObj.label}
         class="w-5 h-5 object-cover rounded"
       />
-    </div>
+      {langObj.label}
+    </a>
   ))}
 </BaseDropdown>
 
