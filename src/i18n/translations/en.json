@@ -36,9 +36,8 @@
             "minLength": "Minimum {min} characters required",
             "maxLength": "Maximum {max} characters allowed",
             "min": "Value must be at least {min}",
-            "max": "Value cannot exceed {max}",
-            "pattern": "The format entered is not valid",
-            "notEqual": "This field must match the other field"
+            "max": "Value cannot exceed {max}",            "pattern": "The format entered is not valid",
+            "notEqual": "This field must be equal to the {equalToName} field"
         },
         "counter": {
             "characters": "characters",

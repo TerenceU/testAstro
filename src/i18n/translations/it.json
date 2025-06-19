@@ -35,9 +35,8 @@
             "minLength": "Minimo {min} caratteri richiesti",
             "maxLength": "Massimo {max} caratteri consentiti",
             "min": "Il valore deve essere almeno {min}",
-            "max": "Il valore non può superare {max}",
-            "pattern": "Il formato inserito non è valido",
-            "notEqual": "Questo campo deve corrispondere all'altro campo"
+            "max": "Il valore non può superare {max}",            "pattern": "Il formato inserito non è valido",
+            "notEqual": "Questo campo deve essere uguale al campo {equalToName}"
         },
         "counter": {
             "characters": "caratteri",

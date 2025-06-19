@@ -36,9 +36,8 @@
       "email": "Por favor digite um endereço de email válido",
       "minLength": "Mínimo {min} caracteres necessários",
       "maxLength": "Máximo {max} caracteres permitidos",      "min": "O valor deve ser pelo menos {min}",
-      "max": "O valor não pode exceder {max}",
-      "pattern": "O formato digitado não é válido",
-      "notEqual": "Este campo deve corresponder ao outro campo"
+      "max": "O valor não pode exceder {max}",      "pattern": "O formato digitado não é válido",
+      "notEqual": "Este campo deve ser igual ao campo {equalToName}"
     },
     "counter": {
       "characters": "caracteres",

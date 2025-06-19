@@ -6,7 +6,6 @@
  * @property {boolean} required
  * @property {string} placeholder
  */
-
  interface Props {
   required?: boolean;
   min?: number;
@@ -16,6 +15,7 @@
   pattern?: string;
   mask?: string;
   isEqualTo?: string;
+  equalToName?: string;
   showErrors?: boolean;
   errorMessage?: string;
   showCounter?: boolean;
@@ -39,6 +39,7 @@ const {
   pattern,
   mask,
   isEqualTo,
+  equalToName,
   // Error handling
   showErrors = true,
   errorMessage,
@@ -123,6 +124,7 @@ const validationData = {
   'data-validation-pattern': pattern,
   'data-validation-mask': mask,
   'data-validation-equal-to': isEqualTo,
+  'data-validation-equal-to-name': equalToName || isEqualTo,
   'data-validation-lang': lang
 };
 
@@ -408,8 +410,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     return maskedValue;
-  }
-  // Validation function
+  }  // Validation function
   function validateInput() {
     const value = input.value;
     const type = input.getAttribute('data-validation-type');
@@ -420,6 +421,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const maxLength = input.getAttribute('data-validation-max-length');
     const pattern = input.getAttribute('data-validation-pattern');
     const equalTo = input.getAttribute('data-validation-equal-to');
+    const equalToName = input.getAttribute('data-validation-equal-to-name');
     
     let isValid = true;
     let errorMessage = '';
@@ -480,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const compareField = document.getElementById(equalTo) || document.querySelector(`[name="${equalTo}"]`);
         if (compareField && value !== compareField.value) {
           isValid = false;
-          errorMessage = t.notEqual;
+          errorMessage = formatMessage(t.notEqual, { equalToName: equalToName || equalTo });
         }
       }
     }
