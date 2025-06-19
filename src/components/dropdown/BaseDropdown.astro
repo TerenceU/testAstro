@@ -72,11 +72,11 @@ if (slotContent) {
     const imgMatch = content.match(/<img[^>]*src=["']([^"']*)["'][^>]*(?:alt=["']([^"']*)["'])?[^>]*>/);
     const imgSrc = imgMatch?.[1];
     const imgAlt = imgMatch?.[2];
-    
-    // Estrarre il testo pulito (rimuovere tag HTML)
+      // Estrarre il testo pulito (rimuovere tag HTML)
     const textContent = content.replace(/<[^>]*>/g, '').trim();
     
     const value = dataValue || 
+                  href ||
                   (imgAlt || (imgSrc ? imgSrc.split('/').pop()?.split('.')[0] : null)) ||
                   textContent || 
                   ``;
@@ -160,8 +160,7 @@ if (options.length === 0) {
 <div 
   class={`dropdown-container relative ${fullWidth ? 'w-full' : 'inline-block'} ${className}`}
   data-dropdown-id={dropdownId}
->
-  <!-- Trigger Button -->
+>  <!-- Trigger Button -->
   <BaseButton
     id={`${dropdownId}-trigger`}
     type="button"
@@ -170,10 +169,11 @@ if (options.length === 0) {
     aria-haspopup="listbox"
     aria-expanded="false"
     aria-label={placeholder}
+    data-initial-value={value || ''}
   >
-    <span class="dropdown-value truncate">{value || placeholder}</span>
+    <div class="dropdown-value flex items-center gap-3 truncate">{value || placeholder}</div>
     <svg 
-      class="dropdown-arrow w-4 h-4 transition-transform duration-200" 
+      class="dropdown-arrow w-4 h-4 transition-transform duration-200 flex-shrink-0" 
       fill="none" 
       stroke="currentColor" 
       viewBox="0 0 24 24"
@@ -277,17 +277,64 @@ if (options.length === 0) {
       // Handle keyboard navigation
       this.container.addEventListener('keydown', (e) => {
         this.handleKeyboard(e);
-      });
-
-      // Position menu to avoid screen edges
+      });      // Position menu to avoid screen edges
       this.trigger.addEventListener('click', () => {
         this.positionMenu();
       });
 
-      // Set initial value if provided
+      // Initialize with the provided value
+      this.initializeValue();
+    }    private initializeValue(): void {
+      // Get initial value from hidden input or data attribute
       const initialValue = this.hiddenInput?.value || this.trigger.getAttribute('data-initial-value');
-      if (initialValue) {
-        this.setValueByData(initialValue);
+      
+      if (initialValue && initialValue.trim() !== '') {
+        // Find the option with matching data-value
+        const matchingOption = Array.from(this.options).find(opt => 
+          opt.getAttribute('data-value') === initialValue
+        );
+        
+        if (matchingOption) {
+          this.selectedValue = initialValue;
+          this.updateTriggerDisplay(matchingOption);
+          
+          // Update aria-selected
+          this.options.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+          matchingOption.setAttribute('aria-selected', 'true');
+          
+          // Ensure hidden input has correct value
+          if (this.hiddenInput) {
+            this.hiddenInput.value = initialValue;
+          }
+        }
+      } else {
+        // Check if there's a pre-selected option based on the current trigger content
+        const currentDisplayValue = this.trigger.querySelector('.dropdown-value')?.textContent?.trim();
+        const placeholder = this.trigger.getAttribute('aria-label');
+        
+        if (currentDisplayValue && currentDisplayValue !== placeholder) {
+          // Find the option that matches the current display value
+          const matchingOption = Array.from(this.options).find(opt => {
+            const optionText = opt.textContent?.trim();
+            const optionValue = opt.getAttribute('data-value');
+            return optionText === currentDisplayValue || optionValue === currentDisplayValue;
+          });
+          
+          if (matchingOption) {
+            const optionValue = matchingOption.getAttribute('data-value') || '';
+            this.selectedValue = optionValue;
+            this.updateTriggerDisplay(matchingOption);
+            
+            // Update hidden input
+            if (this.hiddenInput) {
+              this.hiddenInput.value = optionValue;
+            }
+            
+            // Update aria-selected
+            this.options.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+            matchingOption.setAttribute('aria-selected', 'true');
+          }
+        }
       }
     }
 
@@ -319,22 +366,39 @@ if (options.length === 0) {
       this.menu.classList.add('hidden');
       this.trigger.setAttribute('aria-expanded', 'false');
       this.trigger.querySelector('.dropdown-arrow')?.classList.remove('rotate-180');
-    }
-
-    private selectOption(option: HTMLButtonElement): void {
+    }    private updateTriggerDisplay(option: HTMLButtonElement): void {
+      const label = option.textContent?.trim() || '';
+      
+      // Update UI - copy the complete content from the selected option
+      const valueContainer = this.trigger.querySelector('.dropdown-value');
+      if (valueContainer) {
+        // Clear the value container
+        valueContainer.innerHTML = '';
+        
+        // If the option has an image, copy it
+        const optionImage = option.querySelector('img');
+        if (optionImage) {
+          const imageClone = optionImage.cloneNode(true) as HTMLImageElement;
+          imageClone.className = 'w-6 h-6 rounded object-cover flex-shrink-0';
+          valueContainer.appendChild(imageClone);
+        }
+        
+        // Add the text content
+        const textSpan = document.createElement('span');
+        textSpan.className = 'truncate';
+        textSpan.textContent = label;
+        valueContainer.appendChild(textSpan);
+      }
+    }private selectOption(option: HTMLButtonElement): void {
       if (option.disabled) return;
 
       const value = option.getAttribute('data-value') || '';
       const href = option.getAttribute('data-href');
-      const label = option.textContent?.trim() || '';
 
       this.selectedValue = value;
       
-      // Update UI
-      const valueSpan = this.trigger.querySelector('.dropdown-value');
-      if (valueSpan) {
-        valueSpan.textContent = label;
-      }
+      // Update the trigger display
+      this.updateTriggerDisplay(option);
 
       // Update hidden input
       if (this.hiddenInput) {
@@ -357,15 +421,28 @@ if (options.length === 0) {
 
       // Validate if required
       this.validate();
-    }
-
-    private setValueByData(value: string): void {
+    }    private setValueByData(value: string): void {
       const option = Array.from(this.options).find(opt => 
         opt.getAttribute('data-value') === value
       );
       
       if (option) {
-        this.selectOption(option);
+        // For programmatic setting, use the same logic as selectOption but without closing
+        this.selectedValue = value;
+        this.updateTriggerDisplay(option);
+        
+        // Update hidden input
+        if (this.hiddenInput) {
+          this.hiddenInput.value = value;
+          this.hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        
+        // Update aria-selected
+        this.options.forEach(opt => opt.setAttribute('aria-selected', 'false'));
+        option.setAttribute('aria-selected', 'true');
+        
+        // Validate if required
+        this.validate();
       }
     }
 

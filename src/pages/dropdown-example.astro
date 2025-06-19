@@ -58,6 +58,29 @@ import BaseDropdown from '../components/dropdown/BaseDropdown.astro';
       </BaseDropdown>
     </section>
 
+    <!-- Esempio 3.1: Dropdown con immagini e valore preimpostato -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold">Dropdown con immagini e valore preimpostato</h2>
+      <BaseDropdown 
+        name="image-dropdown-preset" 
+        value="star"
+        placeholder="Seleziona un'icona"
+      >
+        <div data-value="home">
+          <img src="/favicon.svg" alt="Home" width="24" height="24">
+          Home
+        </div>
+        <div data-value="star">
+          <img src="/favicon.svg" alt="Star" width="24" height="24">
+          Stella
+        </div>
+        <div data-value="heart">
+          <img src="/favicon.svg" alt="Heart" width="24" height="24">
+          Cuore
+        </div>
+      </BaseDropdown>
+    </section>
+
     <!-- Esempio 4: Dropdown largo -->
     <section class="space-y-4">
       <h2 class="text-xl font-semibold">Dropdown a larghezza completa</h2>
@@ -98,6 +121,29 @@ import BaseDropdown from '../components/dropdown/BaseDropdown.astro';
         Opzione attiva 2
         <input disabled data-value="disabled2">Altra opzione disabilitata</input>
         Opzione attiva 3
+      </BaseDropdown>
+    </section>
+
+    <!-- Esempio 3.2: Test TranslateDropdown simulation -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold">Simulazione TranslateDropdown con href</h2>
+      <BaseDropdown 
+        name="translate-test" 
+        value="/fr/"
+        placeholder="Seleziona una lingua"
+      >
+        <a href="/en/">
+          <img src="/favicon.svg" alt="English" width="24" height="24">
+          English
+        </a>
+        <a href="/fr/">
+          <img src="/favicon.svg" alt="Français" width="24" height="24">
+          Français
+        </a>
+        <a href="/it/">
+          <img src="/favicon.svg" alt="Italiano" width="24" height="24">
+          Italiano
+        </a>
       </BaseDropdown>
     </section>
 
@@ -143,13 +189,4 @@ import BaseDropdown from '../components/dropdown/BaseDropdown.astro';
   </main>
 </Layout>
 
-<script>
-  // Test form submission
-  document.querySelector('form')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const data = Object.fromEntries(formData.entries());
-    console.log('Form data:', data);
-    alert('Dati del form (vedi console): ' + JSON.stringify(data, null, 2));
-  });
-</script>
+
