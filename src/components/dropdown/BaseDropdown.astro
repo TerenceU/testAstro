@@ -210,18 +210,16 @@ if (options.length === 0) {
       />
     )
   }
-
   <!-- Dropdown Menu -->
   <div
-    class="dropdown-menu absolute top-full left-0 mt-1 bg-dropdown-background border border-dropdown-border rounded-xl shadow-lg z-50 min-w-full max-h-60 overflow-y-auto hidden"
+    class="dropdown-menu absolute top-full left-0 mt-1 bg-dropdown-background border border-dropdown-border rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto hidden"
     role="listbox"
     aria-labelledby={`${dropdownId}-trigger`}
   >
     {
-      options.map((option, index) => (
-        <button
+      options.map((option, index) => (        <button
           type="button"
-          class={`dropdown-option w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center gap-3 transition-colors duration-150 ${
+          class={`dropdown-option w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center gap-3 transition-colors duration-150 whitespace-nowrap ${
             option.disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
           } ${index === 0 ? "rounded-t-xl" : ""} ${index === options.length - 1 ? "rounded-b-xl" : ""}`}
           data-value={option.value}
@@ -237,7 +235,7 @@ if (options.length === 0) {
               class="w-6 h-6 rounded object-cover flex-shrink-0"
             />
           )}
-          <span class="truncate">{option.label}</span>
+          <span class={`${option.image ? "truncate" : "flex-shrink-0"}`}>{option.label}</span>
         </button>
       ))
     }
@@ -297,14 +295,9 @@ if (options.length === 0) {
           this.close();
           this.trigger.focus();
         }
-      });
-
-      // Handle keyboard navigation
+      });      // Handle keyboard navigation
       this.container.addEventListener("keydown", (e) => {
         this.handleKeyboard(e);
-      }); // Position menu to avoid screen edges
-      this.trigger.addEventListener("click", () => {
-        this.positionMenu();
       });
 
       // Initialize with the provided value
@@ -383,23 +376,21 @@ if (options.length === 0) {
       } else {
         this.open();
       }
-    }
-
-    private open(): void {
+    }    private open(): void {
       this.isOpen = true;
-      this.menu.classList.remove("hidden");
       this.trigger.setAttribute("aria-expanded", "true");
       this.trigger
         .querySelector(".dropdown-arrow")
         ?.classList.add("rotate-180");
+
+      // Position the menu first, then show it
+      this.positionMenu();
 
       // Focus first non-disabled option
       const firstOption = Array.from(this.options).find(
         (option) => !option.disabled,
       );
       firstOption?.focus();
-
-      this.positionMenu();
     }
 
     private close(): void {
@@ -494,13 +485,10 @@ if (options.length === 0) {
         // Validate if required
         this.validate();
       }
-    }
-
-    private positionMenu(): void {
+    }    private positionMenu(): void {
       if (!this.isOpen) return;
 
       const rect = this.trigger.getBoundingClientRect();
-      const menuRect = this.menu.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
       const viewportWidth = window.innerWidth;
 
@@ -510,9 +498,37 @@ if (options.length === 0) {
       this.menu.style.left = "";
       this.menu.style.right = "";
       this.menu.style.maxWidth = "";
+      this.menu.style.minWidth = "";
+      this.menu.style.width = "";
+
+      // Temporarily show the menu to measure its natural size
+      this.menu.style.visibility = "hidden";
+      this.menu.classList.remove("hidden");
+      
+      const menuRect = this.menu.getBoundingClientRect();
+      const naturalWidth = menuRect.width;
+      
+      // Hide it again
+      this.menu.style.visibility = "";
+      this.menu.classList.add("hidden");
+
+      // Set minimum width to match trigger button or natural content width
+      const minWidth = Math.max(rect.width, Math.min(naturalWidth, 200));
+      this.menu.style.minWidth = `${minWidth}px`;
+
+      // Calculate maximum available width
+      const maxAvailableWidth = viewportWidth - rect.left - 20;
+      const finalWidth = Math.min(Math.max(naturalWidth, minWidth), maxAvailableWidth);
+      
+      // Set the final width
+      this.menu.style.width = `${finalWidth}px`;
+
+      // Show the menu again for final positioning
+      this.menu.classList.remove("hidden");
+      const finalMenuRect = this.menu.getBoundingClientRect();
 
       // Check if menu would overflow bottom of screen
-      if (rect.bottom + menuRect.height > viewportHeight - 10) {
+      if (rect.bottom + finalMenuRect.height > viewportHeight - 10) {
         // Position above the trigger
         this.menu.style.bottom = "100%";
         this.menu.style.top = "auto";
@@ -521,14 +537,10 @@ if (options.length === 0) {
       }
 
       // Check if menu would overflow right of screen
-      if (rect.left + menuRect.width > viewportWidth - 10) {
+      if (rect.left + finalMenuRect.width > viewportWidth - 10) {
         this.menu.style.right = "0";
         this.menu.style.left = "auto";
       }
-
-      // Set max width to prevent overflow
-      const maxWidth = Math.min(menuRect.width, viewportWidth - rect.left - 20);
-      this.menu.style.maxWidth = `${maxWidth}px`;
     }
 
     private handleKeyboard(e: KeyboardEvent): void {
