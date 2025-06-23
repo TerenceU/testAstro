@@ -3,16 +3,17 @@ import BaseDropdown from "./BaseDropdown.astro";
 import { TranslationService } from "@/i18n/utils";
 
 const { lang, ...props } = Astro.props;
-const currentPath = Astro.url.pathname;
+const currentLangPath = `/${Astro.url.pathname.replace(/^\//, '').split('/')[0]}/` || '/it/'; // Default to 'it' if no language is specified
+const subPath = Astro.url.pathname.replace(/^\//, '').split('/').slice(1).join('/') || ''; // Get the subpath after the language code
 const languages = TranslationService.languagesArray;
 ---
 <BaseDropdown 
     id="lang-dropdown" 
-    value={currentPath} 
+    value={currentLangPath} 
     {...props}
   >
   {languages.map(langObj => (
-    <a href={`/${langObj.params.lang}/`}>
+    <a data-value={`/${langObj.params.lang}/`} href={`/${langObj.params.lang}/${subPath}`}>
       <img 
         src={`https://flagsapi.com/${langObj.params.flag.toUpperCase()}/flat/32.png`}
         alt={langObj.label}
