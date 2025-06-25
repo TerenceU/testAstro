@@ -12,6 +12,7 @@ interface Props {
   required?: boolean;
   name?: string;
   fullWidth?: boolean;
+  sortBy?: "none" | "label" | "value" | "label-desc" | "value-desc";
 }
 
 // Definire le proprietà del componente
@@ -25,6 +26,7 @@ const {
   required = false,
   name,
   fullWidth = false,
+  sortBy = "none",
   ...props
 } = Astro.props;
 
@@ -162,6 +164,39 @@ if (options.length === 0) {
       disabled: true,
     },
   ];
+}
+
+// Applicare l'ordinamento se specificato
+if (sortBy !== "none" && options.length > 0) {
+  // Non ordinare se c'è solo un'opzione disabilitata di default
+  const shouldSort = !(options.length === 1 && options[0].disabled && options[0].label === "Nessuna opzione disponibile");
+  
+  if (shouldSort) {
+    options.sort((a, b) => {
+      let aValue: string, bValue: string;
+      
+      // Determinare quale campo usare per l'ordinamento
+      if (sortBy.startsWith("label")) {
+        aValue = a.label.toLowerCase();
+        bValue = b.label.toLowerCase();
+      } else if (sortBy.startsWith("value")) {
+        aValue = a.value.toLowerCase();
+        bValue = b.value.toLowerCase();
+      } else {
+        return 0; // Nessun ordinamento
+      }
+      
+      // Applicare l'ordinamento
+      let comparison = aValue.localeCompare(bValue, 'it', { numeric: true, sensitivity: 'base' });
+      
+      // Invertire se è un ordinamento discendente
+      if (sortBy.endsWith("-desc")) {
+        comparison = -comparison;
+      }
+      
+      return comparison;
+    });
+  }
 }
 ---
 

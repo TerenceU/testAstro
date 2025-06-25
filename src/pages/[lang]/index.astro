@@ -33,124 +33,16 @@ const t = TranslationService.useTranslations(lang);
             {t('pages.index.description')}
         </BaseText>
 
-        <BaseButton type="button">
-            {t('pages.index.button')}
-        </BaseButton>
 
         <!-- Dropdown semplice con slot content -->
-        <BaseDropdown id="simple-dropdown" placeholder="Scegli un'opzione">
-            <option value="option1">Opzione 1</option>
-            <option value="option2">Opzione 2</option>
-            <option value="option3">Opzione 3</option>
+        <BaseDropdown sortBy='value-desc' id="simple-dropdown" placeholder="sdfsfd">
+            asdf
+            aas
+            <button value="aaaaaaa" disabled>textSpan</button>
+            adfddf
+            <a href="./about" data-disabled><img src="https://th.bing.com/th/id/R.c96b7a293ea56b1d3d60c84fe890584a?rik=ZOE8QaggWDa4Cg&pid=ImgRaw&r=0" />Cerca</a>
         </BaseDropdown>
 
-        <!-- Dropdown con opzioni predefinite (array) -->
-        <BaseDropdown 
-            id="predefined-dropdown" 
-            placeholder="Seleziona una categoria"
-        >
-            <button type="button" data-value="tech" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Tecnologia</button>
-            <button type="button" data-value="design" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Design</button>
-            <button type="button" data-value="business" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Business</button>
-        </BaseDropdown>
 
-        <!-- Dropdown con larghezza automatica per il bottone -->
-        <BaseDropdown 
-            id="auto-width-dropdown" 
-            placeholder="Auto width"
-        >
-            <button type="button" data-value="short" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Breve</button>
-            <button type="button" data-value="medium" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Opzione media</button>
-            <button type="button" data-value="long" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">Opzione molto molto lunga</button>
-        </BaseDropdown>
-
-        <!-- Dropdown per le lingue con immagini (solo icona) -->
-        <TranslateDropdown lang={lang} />
-
-        <!-- Esempio di dropdown con menu auto-width -->
-        <BaseDropdown 
-            id="menu-auto-width-dropdown" 
-            placeholder="Menu auto width"
-        >
-            <button type="button" data-value="option1" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
-                <img src="https://flagsapi.com/IT/flat/32.png" alt="Italia" class="w-5 h-5 object-cover rounded" />
-                Prima opzione con testo molto molto molto lungo per testare l'adattamento
-            </button>
-            <button type="button" data-value="option2" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
-                <img src="https://flagsapi.com/FR/flat/32.png" alt="Francia" class="w-5 h-5 object-cover rounded" />
-                Breve
-            </button>
-            <button type="button" data-value="option3" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
-                <img src="https://flagsapi.com/DE/flat/32.png" alt="Germania" class="w-5 h-5 object-cover rounded" />
-                Opzione di media lunghezza per confronto
-            </button>
-        </BaseDropdown>
-
-        <!-- Confronto: stesso dropdown SENZA menuAutoWidth -->
-        <BaseDropdown 
-            id="menu-fixed-width-dropdown" 
-            placeholder="Menu larghezza fissa"
-            class="max-w-[300px]"
-        >
-            <button type="button" data-value="option1" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
-                <img src="https://flagsapi.com/IT/flat/32.png" alt="Italia" class="w-5 h-5 object-cover rounded" />
-                Prima opzione con testo molto molto molto lungo per testare l'adattamento
-            </button>
-            <button type="button" data-value="option2" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
-                <img src="https://flagsapi.com/FR/flat/32.png" alt="Francia" class="w-5 h-5 object-cover rounded" />
-                Breve
-            </button>
-            <button type="button" data-value="option3" class="custom-dropdown-option text-left px-4 py-3 w-full whitespace-nowrap flex-shrink-0 hover:bg-[var(--color-second)] focus:bg-[var(--color-second)] focus:outline-none transition-colors duration-150 flex items-center gap-2 first:rounded-t-xl last:rounded-b-xl">
-                <img src="https://flagsapi.com/DE/flat/32.png" alt="Germania" class="w-5 h-5 object-cover rounded" />
-                Opzione di media lunghezza per confronto
-            </button>
-        </BaseDropdown>
-
-        <BaseCard>
-        
-            <Fragment slot="header">
-                <BaseText Type="h2">
-                    {t('pages.index.title')}
-                </BaseText>
-            </Fragment>
-
-            {t('pages.index.description')}
-
-            <BaseInput type="text" label={t('input.name')} required>
-            </BaseInput>
-            
-            <BaseInput type="email" animatedLabel={true} />
-            <BaseInput type="password" animatedLabel={true} required />
-            <BaseInput type="password" label={t('input.password')} required />
-
-            
-            <Fragment slot="footer">
-                <BaseButton type="button">
-                    {t('pages.index.card.button')}
-                </BaseButton>
-            </Fragment>
-            
-        </BaseCard>
-        
-        <BaseInput type="text" placeholder={t('input.placeholder')} required minLength={2} maxLength={50} showCounter animatedLabel label={t('input.name')} />
-
-        <BaseInput type="text" placeholder={t('input.placeholder')} required minLength={2} maxLength={500} showCounter animatedLabel label={t('input.description')} />  
-
-        <BaseForm method='post' action="/api/user">
-            <Fragment slot="form-header">
-                <BaseText Type="h2">
-                    {t('form.title')}
-                </BaseText>
-            </Fragment>
-            <BaseInput type="text" label={t('input.name')} animatedLabel={true} required />
-            <BaseInput type="email" animatedLabel={true} />
-            <BaseInput type="password" animatedLabel={true} required name="main-pass"/>
-            <BaseInput type="password" label={t('input.password')} animatedLabel={true} required isEqualTo='main-pass'/>
-            <Fragment slot="form-footer">
-                <BaseButton type="submit">
-                    {t('form.submit')}
-                </BaseButton>
-            </Fragment>
-        </BaseForm>
 
     </Layout>
