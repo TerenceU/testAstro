@@ -35,14 +35,27 @@ const t = TranslationService.useTranslations(lang);
 
 
         <!-- Dropdown semplice con slot content -->
-        <BaseDropdown sortBy='value-desc' id="simple-dropdown" placeholder="sdfsfd">
+        <BaseDropdown sortBy='label' id="simple-dropdown" placeholder="sdfsfd">
             asdf
-            aas
+            aas (disabled)
             <button value="aaaaaaa" disabled>textSpan</button>
-            adfddf
+            adfddf 
             <a href="./about" data-disabled><img src="https://th.bing.com/th/id/R.c96b7a293ea56b1d3d60c84fe890584a?rik=ZOE8QaggWDa4Cg&pid=ImgRaw&r=0" />Cerca</a>
         </BaseDropdown>
 
-
+<BaseDropdown sortBy="custom" placeholder="Seleziona un'opzione">
+  <!-- Queste opzioni verranno ordinate secondo position -->
+  Terza opzione (position="3")
+  Prima opzione (position="1") 
+  Seconda opzione (data-position="2")
+  
+  <!-- Queste appariranno dopo, nell'ordine originale -->
+  Opzione senza position A
+  Opzione senza position B
+  
+  <!-- Anche con elementi HTML -->
+  <button data-position="0">Questa sarà la prima!</button>
+  <a href="/link" data-position="4">Questa sarà la quarta</a>
+</BaseDropdown>
 
     </Layout>

@@ -12,7 +12,7 @@ interface Props {
   required?: boolean;
   name?: string;
   fullWidth?: boolean;
-  sortBy?: "none" | "label" | "value" | "label-desc" | "value-desc";
+  sortBy?: "none" | "label" | "value" | "label-desc" | "value-desc" | "custom";
 }
 
 // Definire le proprietà del componente
@@ -46,6 +46,7 @@ interface DropdownOption {
     alt: string;
   } | null;
   disabled: boolean;
+  position?: number;
 }
 
 // Processare il contenuto dello slot per creare le opzioni
@@ -67,6 +68,7 @@ if (slotContent) {
     // Estrarre attributi
     const dataValue = attributes.match(/data-value=["']([^"']*)["']/)?.[1];
     const href = attributes.match(/href=["']([^"']*)["']/)?.[1];
+    const position = attributes.match(/(?:data-)?position=["']([^"']*)["']/)?.[1];
     const disabled =
       attributes.includes("disabled") ||
       attributes.includes('aria-disabled="true"');
@@ -99,6 +101,7 @@ if (slotContent) {
           }
         : null,
       disabled,
+      position: position ? parseInt(position, 10) : undefined,
     });
 
     // Rimuovere l'elemento processato dal contenuto
@@ -113,6 +116,7 @@ if (slotContent) {
       const src = attributes.match(/src=["']([^"']*)["']/)?.[1];
       const alt = attributes.match(/alt=["']([^"']*)["']/)?.[1];
       const dataValue = attributes.match(/data-value=["']([^"']*)["']/)?.[1];
+      const position = attributes.match(/(?:data-)?position=["']([^"']*)["']/)?.[1];
 
       if (src) {
         const value =
@@ -127,6 +131,7 @@ if (slotContent) {
             alt: alt || "",
           },
           disabled: false,
+          position: position ? parseInt(position, 10) : undefined,
         });
 
         processedContent = processedContent.replace(fullMatch, "");
@@ -140,14 +145,60 @@ if (slotContent) {
     .map((line) => line.trim())
     .filter((line) => line && !line.match(/<[^>]*>/) && line.length > 0);
 
+  // Funzione per parsare gli attributi dalle parentesi
+  const parseAttributesFromParentheses = (text: string) => {
+    // Pattern per matchare testo seguito da attributi tra parentesi
+    const match = text.match(/^(.+?)\s*\(([^)]+)\)$/);
+    
+    if (!match) {
+      return {
+        label: text.trim(),
+        attributes: {}
+      };
+    }
+    
+    const label = match[1].trim();
+    const attributesString = match[2];
+    const attributes: { [key: string]: string | boolean } = {};
+    
+    // Pattern per estrarre attributi nel formato: attributo="valore" o attributo
+    const attributePattern = /(\w+(?:-\w+)*)(?:=["']([^"']*)["'])?/g;
+    let attrMatch;
+    
+    while ((attrMatch = attributePattern.exec(attributesString)) !== null) {
+      const [, attrName, attrValue] = attrMatch;
+      
+      if (attrValue !== undefined) {
+        attributes[attrName] = attrValue;
+      } else {
+        // Attributo boolean (es. disabled)
+        attributes[attrName] = true;
+      }
+    }
+    
+    return { label, attributes };
+  };
+
   remainingLines.forEach((line) => {
     if (line.trim()) {
+      const { label, attributes } = parseAttributesFromParentheses(line);
+      
+      // Estrarre i valori degli attributi
+      const dataValue = attributes['data-value'] as string;
+      const href = attributes['href'] as string;
+      const disabled = attributes['disabled'] === true;
+      const position = attributes['position'] as string || attributes['data-position'] as string;
+      
+      // Usare data-value se specificato, altrimenti usare il label come value
+      const value = dataValue || label;
+      
       options.push({
-        value: line.trim(),
-        label: line.trim(),
-        href: null,
+        value,
+        label,
+        href: href || null,
         image: null,
-        disabled: false,
+        disabled,
+        position: position ? parseInt(position as string, 10) : undefined,
       });
     }
   });
@@ -162,6 +213,7 @@ if (options.length === 0) {
       href: null,
       image: null,
       disabled: true,
+      position: undefined,
     },
   ];
 }
@@ -172,30 +224,51 @@ if (sortBy !== "none" && options.length > 0) {
   const shouldSort = !(options.length === 1 && options[0].disabled && options[0].label === "Nessuna opzione disponibile");
   
   if (shouldSort) {
-    options.sort((a, b) => {
-      let aValue: string, bValue: string;
-      
-      // Determinare quale campo usare per l'ordinamento
-      if (sortBy.startsWith("label")) {
-        aValue = a.label.toLowerCase();
-        bValue = b.label.toLowerCase();
-      } else if (sortBy.startsWith("value")) {
-        aValue = a.value.toLowerCase();
-        bValue = b.value.toLowerCase();
-      } else {
-        return 0; // Nessun ordinamento
-      }
-      
-      // Applicare l'ordinamento
-      let comparison = aValue.localeCompare(bValue, 'it', { numeric: true, sensitivity: 'base' });
-      
-      // Invertire se è un ordinamento discendente
-      if (sortBy.endsWith("-desc")) {
-        comparison = -comparison;
-      }
-      
-      return comparison;
-    });
+    if (sortBy === "custom") {
+      // Ordinamento personalizzato basato su position
+      options.sort((a, b) => {
+        // Se entrambi hanno position, ordina numericamente
+        if (a.position !== undefined && b.position !== undefined) {
+          return a.position - b.position;
+        }
+        // Se solo a ha position, a viene prima
+        if (a.position !== undefined && b.position === undefined) {
+          return -1;
+        }
+        // Se solo b ha position, b viene prima
+        if (a.position === undefined && b.position !== undefined) {
+          return 1;
+        }
+        // Se nessuno dei due ha position, mantieni l'ordine originale
+        return 0;
+      });
+    } else {
+      // Altri tipi di ordinamento
+      options.sort((a, b) => {
+        let aValue: string, bValue: string;
+        
+        // Determinare quale campo usare per l'ordinamento
+        if (sortBy.startsWith("label")) {
+          aValue = a.label.toLowerCase();
+          bValue = b.label.toLowerCase();
+        } else if (sortBy.startsWith("value")) {
+          aValue = a.value.toLowerCase();
+          bValue = b.value.toLowerCase();
+        } else {
+          return 0; // Nessun ordinamento
+        }
+        
+        // Applicare l'ordinamento
+        let comparison = aValue.localeCompare(bValue, 'it', { numeric: true, sensitivity: 'base' });
+        
+        // Invertire se è un ordinamento discendente
+        if (sortBy.endsWith("-desc")) {
+          comparison = -comparison;
+        }
+        
+        return comparison;
+      });
+    }
   }
 }
 ---
