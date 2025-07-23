@@ -1,47 +1,337 @@
 ---
+interface Props {
+  isSkeleton?: boolean;
+  animation?: "none" | "pulse-spin" | "ripple-fill" | "line-split" | "top-fill";
+  [key: string]: any; // Allow any other props
+}
+
 // This is the main button component for the application.
 export const prerender = false;
 // Accept any props that are passed to the button element
-const { isSkeleton = false, ...props } = Astro.props as Record<string, any>;   
+const {
+  isSkeleton = false,
+  animation = "none",
+  ...props
+} = Astro.props as Record<string, any>;
 
 // Set default attributes for the button if not provided
 const defaultAttributes = {
-  type: 'button',
-  class: 'text-button-text-color leading-normal bg-button-background py-2.5 px-4 tracking-wide border border-dropdown-border rounded-xl font-default transition-all duration-200 hover:bg-button-hover-background hover:shadow-lg hover:shadow-border/50 focus:ring-2 focus:ring-focus',
+  type: "button",
+  class:
+    "text-button-text-color leading-normal bg-button-background py-2.5 px-4 tracking-wide border border-dropdown-border rounded-xl font-default transition-all duration-200 hover:bg-button-hover-background hover:shadow-lg hover:shadow-border/50 focus:ring-2 focus:ring-focus",
+};
+
+// Animation styles based on animation prop
+const animationStyles = {
+  none: "",
+  "pulse-spin": "animated-button pulse-spin-animation",
+  "ripple-fill": "animated-button ripple-fill-animation",
+  "line-split": "animated-button line-split-animation",
+  "top-fill": "animated-button top-fill-animation",
 };
 
 props.type = props.type ?? defaultAttributes.type;
 
-props.class = props.class ?? defaultAttributes.class;
+// Use animated button styles if animation is specified
+if (animation !== "none") {
+  props.class = `text-first bg-transparent border-2 border-button-background py-2.5 px-4 tracking-wide rounded-xl font-default transition-all duration-300 relative overflow-hidden ${animationStyles[animation]}`;
+} else {
+  props.class = props.class ?? defaultAttributes.class;
+}
 
+props.class += isSkeleton
+  ? " bg-gray-200 text-gray-400 cursor-not-allowed animate-pulse hover:bg-gray-200"
+  : "";
 
-props.class += isSkeleton ? ' bg-gray-200 text-gray-400 cursor-not-allowed animate-pulse hover:bg-gray-200' : '';
-
-if(isSkeleton){
+if (isSkeleton) {
   //get the slot content and replace it with a lodigng text
-  var slot = Astro.slots.render('default');
-  
+  var slot = Astro.slots.render("default");
 }
 
 if (props.disabled) {
-  props.class += ' cursor-not-allowed opacity-50';
+  props.class += " cursor-not-allowed opacity-50";
 }
-
 
 const attributes = {
   ...props,
 };
 
-let Tag = 'button';
-if(props.href) {
-  props.type = 'link';
-  props.class += ' inline-flex items-center justify-center';
-  Tag = 'a';
+let Tag = "button";
+if (props.href) {
+  props.type = "link";
+  props.class += " inline-flex items-center justify-center";
+  Tag = "a";
 }
-
 ---
 
+<style>
+  /* Animated Button Base Styles */
+  .animated-button {
+    position: relative;
+    z-index: 1;
+    background: transparent !important;
+    color: var(--color-first) !important;
+    border: 2px solid var(--color-button-background) !important;
+    overflow: hidden;
+  }
+
+  .animated-button:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* Animation 1: Pulse + Spin */
+  .pulse-spin-animation {
+    transition: all 0.3s ease;
+  }
+
+  .pulse-spin-animation::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    background: var(--color-button-background);
+    z-index: -1;
+    transform: scale(0);
+    transition: transform 0.3s ease;
+    border-radius: 12px;
+  }
+
+  .pulse-spin-animation:hover {
+    animation: pulse-animation 0.6s ease-in-out;
+    color: var(--color-button-text-color) !important;
+  }
+
+  .pulse-spin-animation:hover::before {
+    transform: scale(1);
+  }
+
+  .pulse-spin-animation.spinning {
+    animation: spin-animation 0.5s ease-in-out;
+  }
+
+  @keyframes pulse-animation {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes spin-animation {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Animation 2: Ripple + Fill */
+  .ripple-fill-animation {
+    transition: all 0.3s ease;
+  }
+
+  .ripple-fill-animation::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    background: var(--color-button-background);
+    z-index: -1;
+    transform: scale(0);
+    transition: transform 0.3s ease;
+    border-radius: 12px;
+    transform-origin: center;
+  }
+
+  .ripple-fill-animation:hover::before {
+    transform: scale(1);
+  }
+
+  .ripple-fill-animation:hover {
+    color: var(--color-button-text-color) !important;
+  }
+
+  .ripple-fill-animation.rippling::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: ripple-effect 0.6s ease-out;
+    z-index: 1;
+  }
+
+  @keyframes ripple-effect {
+    to {
+      width: 300px;
+      height: 300px;
+      opacity: 0;
+    }
+  }
+
+  /* Animation 3: Line Split */
+  .line-split-animation {
+    transition: all 0.3s ease;
+  }
+
+  .line-split-animation::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--color-button-background);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease;
+    z-index: -1;
+  }
+
+  .line-split-animation::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    background: var(--color-button-background);
+    transform: scaleY(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    z-index: -1;
+    border-radius: 12px;
+  }
+
+  .line-split-animation:hover::before {
+    width: 100%;
+  }
+
+  .line-split-animation:hover::after {
+    transform: scaleY(1);
+  }
+
+  .line-split-animation:hover {
+    color: var(--color-button-text-color) !important;
+  }
+
+  .line-split-animation.splitting::after {
+    animation: split-animation 0.4s ease-in-out;
+  }
+
+  @keyframes split-animation {
+    0% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(0) scaleX(1.1);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+
+  /* Animation 4: Top Fill */
+  .top-fill-animation {
+    transition: all 0.3s ease;
+  }
+
+  .top-fill-animation::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: calc(100% + 4px);
+    height: 0;
+    background: var(--color-button-background);
+    transition: height 0.3s ease;
+    z-index: -1;
+    border-radius: 12px;
+  }
+
+  .top-fill-animation:hover::before {
+    height: calc(100% + 4px);
+  }
+
+  .top-fill-animation:hover {
+    color: var(--color-button-text-color) !important;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Handle pulse-spin animation
+    document.querySelectorAll(".pulse-spin-animation").forEach((button) => {
+      button.addEventListener("click", function (e) {
+        e.preventDefault();
+        this.classList.add("spinning");
+
+        setTimeout(() => {
+          this.classList.remove("spinning");
+        }, 500);
+
+        // If the button has an href, navigate after animation
+        if (this.href) {
+          setTimeout(() => {
+            window.location.href = this.href;
+          }, 500);
+        }
+      });
+    });
+
+    // Handle ripple-fill animation
+    document.querySelectorAll(".ripple-fill-animation").forEach((button) => {
+      button.addEventListener("click", function (e) {
+        e.preventDefault();
+        this.classList.add("rippling");
+
+        setTimeout(() => {
+          this.classList.remove("rippling");
+        }, 600);
+
+        // If the button has an href, navigate after animation
+        if (this.href) {
+          setTimeout(() => {
+            window.location.href = this.href;
+          }, 600);
+        }
+      });
+    });
+
+    // Handle line-split animation
+    document.querySelectorAll(".line-split-animation").forEach((button) => {
+      button.addEventListener("click", function (e) {
+        e.preventDefault();
+        this.classList.add("splitting");
+
+        setTimeout(() => {
+          this.classList.remove("splitting");
+        }, 400);
+
+        // If the button has an href, navigate after animation
+        if (this.href) {
+          setTimeout(() => {
+            window.location.href = this.href;
+          }, 400);
+        }
+      });
+    });
+
+    // Top-fill animation doesn't need click handling, it's only hover-based
+  });
+</script>
+
 <Tag {...attributes}>
-  
-    <slot />
+  <slot />
 </Tag>
